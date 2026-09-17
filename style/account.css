@@ -1,0 +1,203 @@
+/* ---------- dashboard ---------- */
+
+#dashboard { max-width: 1180px; }
+
+.dash-empty {
+    text-align: center;
+    padding: 4rem 2rem;
+    border: 1px dashed var(--ink-15);
+}
+.dash-empty i { font-size: 2rem; color: var(--violet); margin-bottom: 0.8rem; display: block; }
+
+.dash-grid {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 0;
+    border: 1px solid var(--ink-15);
+}
+
+.dash-profile {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 2.25rem 1.75rem;
+}
+
+.dash-avatar {
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--violet);
+    color: var(--paper);
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    font-weight: 700;
+    clip-path: var(--arch-sm);
+    margin-bottom: 1rem;
+}
+
+.dash-profile h4 { color: var(--paper); margin-bottom: 0.15em; }
+.dash-sub { font-size: 0.82rem; color: rgba(249, 245, 255, 0.55); }
+
+.dash-stats {
+    margin: 1.4rem 0;
+    padding-top: 1.2rem;
+    border-top: 1px solid rgba(249, 245, 255, 0.15);
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    font-size: 0.86rem;
+    color: rgba(249, 245, 255, 0.75);
+}
+
+.dash-target {
+    font-size: 0.82rem;
+    color: var(--lilac);
+    padding-top: 1rem;
+    border-top: 1px solid rgba(249, 245, 255, 0.15);
+}
+
+.dash-plan { padding: clamp(1.75rem, 3vw, 2.5rem); }
+
+.plan-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1.4rem;
+}
+.plan-head p { margin: 0.2em 0 0; font-size: 0.86rem; }
+
+.plan-countdown {
+    font-family: var(--font-display);
+    font-size: 1.6rem;
+    color: var(--cobalt);
+    white-space: nowrap;
+}
+
+.plan-progress { margin-bottom: 1.6rem; }
+.plan-progress-bar {
+    height: 8px;
+    background: var(--ink-15);
+    border-radius: 999px;
+    overflow: hidden;
+}
+.plan-progress-bar span {
+    display: block;
+    height: 100%;
+    background: var(--cobalt);
+}
+.plan-progress-label,
+#plan-progress-label {
+    display: block;
+    font-size: 0.78rem;
+    color: var(--ink-45);
+    margin-top: 0.5em;
+}
+
+.plan-gaps {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-bottom: 1.8rem;
+}
+.plan-gaps > * {
+    font-size: 0.82rem;
+    background: var(--violet-15);
+    color: var(--cobalt);
+    padding: 0.4em 0.85em;
+    border-radius: var(--radius-s);
+}
+
+.plan-subtitle { margin-bottom: 1rem; }
+
+.plan-timeline {
+    position: relative;
+    padding-left: 1.6rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.4rem;
+}
+.plan-timeline::before {
+    content: '';
+    position: absolute;
+    left: 5px;
+    top: 6px;
+    bottom: 6px;
+    width: 1px;
+    background: var(--ink-15);
+}
+.plan-timeline > li { position: relative; font-size: 0.9rem; }
+.plan-timeline > li::before {
+    content: '';
+    position: absolute;
+    left: -1.6rem;
+    top: 0.35em;
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: var(--paper);
+    border: 2px solid var(--violet);
+}
+
+/* ---------- deadline tracker (a true sequence) ---------- */
+
+.timeline-container {
+    position: relative;
+    max-width: 760px;
+    padding-left: 2.2rem;
+}
+.timeline-container::before {
+    content: '';
+    position: absolute;
+    left: 7px;
+    top: 8px;
+    bottom: 8px;
+    width: 1px;
+    background: var(--ink-15);
+}
+
+.timeline-item {
+    position: relative;
+    display: grid;
+    grid-template-columns: 110px 1fr;
+    gap: 1.2rem;
+    padding-bottom: 2.2rem;
+}
+.timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -2.2rem;
+    top: 0.3em;
+    width: 13px;
+    height: 13px;
+    border-radius: 50%;
+    background: var(--paper);
+    border: 2px solid var(--ink-15);
+}
+.timeline-item.highlight::before {
+    border-color: var(--cobalt);
+    background: var(--cobalt);
+}
+
+.time-badge {
+    font-family: var(--font-display);
+    font-weight: 700;
+    color: var(--ink);
+}
+.timeline-item.highlight .time-badge { color: var(--cobalt); }
+
+.time-content h4 { margin-bottom: 0.3em; }
+.time-content p { font-size: 0.9rem; }
+
+.countdown {
+    display: inline-block;
+    margin-top: 0.6rem;
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    color: var(--cobalt);
+    background: var(--cobalt-10);
+    padding: 0.5em 1em;
+    border-radius: var(--radius-s);
+}

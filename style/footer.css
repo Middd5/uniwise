@@ -1,0 +1,15 @@
+/* ---------- footer ---------- */
+
+.footer {
+    background: var(--ink);
+    color: rgba(249, 245, 255, 0.55);
+    text-align: center;
+    justify-content: center;
+    display: flex;
+    padding: 2rem 1rem;
+    font-size: 0.85rem;
+}
+
+.footer p {
+    color: var(--paper);
+}

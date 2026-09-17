@@ -1,0 +1,59 @@
+[
+  {
+    "id": "utoronto",
+    "name": "University of Toronto",
+    "rank": "#1 в Канаде",
+    "image": "https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&w=800&q=80",
+    "desc": "Ведущий исследовательский университет Канады с сильнейшей школой искусственного интеллекта.",
+    "majors": ["cs", "eng"],
+    "stats": {
+      "ielts": "7.0+",
+      "gpa": "3.8 / 4.0",
+      "tuition": "$45k – $60k"
+    },
+    "details": {
+      "docs": "аттестат, IELTS, 2 рекомендации, эссе.",
+      "activities": "научные проекты, лидерство, олимпиады."
+    },
+    "deadline": "15 января",
+    "link": "https://www.utoronto.ca"
+  },
+  {
+    "id": "uwaterloo",
+    "name": "University of Waterloo",
+    "rank": "#1 по Co-Op",
+    "image": "https://images.unsplash.com/photo-1541829070764-84a7d30dd3f3?auto=format&fit=crop&w=800&q=80",
+    "desc": "Столица канадского Silicon Valley. Лучшие программы оплачиваемых стажировок во время учёбы.",
+    "majors": ["cs", "biz"],
+    "stats": {
+      "ielts": "6.5+",
+      "gpa": "3.6 / 4.0",
+      "tuition": "$42k – $55k"
+    },
+    "details": {
+      "docs": "AIF форма, IELTS, транскрипт оценок.",
+      "activities": "разработка ПО, стартапы, хакатоны."
+    },
+    "deadline": "1 февраля",
+    "link": "https://uwaterloo.ca"
+  },
+  {
+    "id": "ualberta",
+    "name": "University of Alberta",
+    "rank": "Топ-5 в Канаде",
+    "image": "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=800&q=80",
+    "desc": "Университет с огромным фондом стипендий и низкими ценами на проживание в провинции Альберта.",
+    "majors": ["eng", "biz"],
+    "stats": {
+      "ielts": "6.5+",
+      "gpa": "3.2 / 4.0",
+      "tuition": "$29k – $40k"
+    },
+    "details": {
+      "docs": "заявка, выписка оценок, сертификат языка.",
+      "activities": "волонтёрство, школьный совет, спорт."
+    },
+    "deadline": "1 марта",
+    "link": "https://www.ualberta.ca"
+  }
+]

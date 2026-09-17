@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UniWise — поступление за рубеж без агентов</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="style/style.css">
+    <link rel="stylesheet" href="style/header.css">
+    <link rel="stylesheet" href="style/home.css">
+    <link rel="stylesheet" href="style/footer.css">
+    <link rel="stylesheet" href="style/auth.css">
+    <link rel="stylesheet" href="style/chat.css">
+    <link rel="stylesheet" href="style/responsive.css">
+</head>
+<body>
+    <!-- 1. Прозрачная Шапка -->
+    <header class="navbar">
+        <div class="logo">
+            <!-- Эмблема UniWise -->
+                <svg width="36" height="36" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- Градиент для U -->
+                <defs>
+                    <linearGradient id="uniwise-grad" x1="20" y1="20" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+                    <stop offset="0%" stop-color="#14248A" />
+                    <stop offset="100%" stop-color="#998FC7" />
+                    </linearGradient>
+                    <linearGradient id="spark-grad" x1="0" y1="0" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#F9F5FF" />
+                    <stop offset="100%" stop-color="#D4C2FC" />
+                    </linearGradient>
+                </defs>
+
+                <!-- Монограмма 'U' -->
+                <path d="M 30 25 L 48 25 L 48 65 C 48 71.6 53.4 77 60 77 C 66.6 77 72 71.6 72 65 L 72 25 L 90 25 L 90 65 C 90 81.5 76.5 95 60 95 C 43.5 95 30 81.5 30 65 Z" fill="url(#uniwise-grad)" />
+
+                <!-- Ромб (Верхушка шапочки над U) -->
+                <path d="M 60 15 L 85 27 L 60 39 L 35 27 Z" fill="#D4C2FC" opacity="0.9" />
+
+                <!-- Spark -->
+                <path d="M 60 48 Q 60 58 50 58 Q 60 58 60 68 Q 60 58 70 58 Q 60 58 60 48 Z" fill="url(#spark-grad)" />
+                </svg>
+            <a href="./">UniWise</a>
+        </div>
+        <nav class="nav-links">
+            <a href="./">Главная</a>
+            <a href="#assessment">Анкета</a>
+            <a href="./">Подбор вузов</a>
+            <a href="catalog/">Каталог</a>
+            <a href="profile/">Личный кабинет</a>
+            <a href="#faq">Вопросы</a>
+        </nav>
+        <div class="nav-auth" style="position: relative;">
+            <span id="user-chip" class="user-chip hidden" onclick="toggleUserDropdown(event)" style="cursor: pointer; font-weight: bold;"></span>
+
+            <div id="user-dropdown" class="user-dropdown hidden" style="position: absolute; right: 0; top: 100%; margin-top: 8px; background: #fff; border: 1px solid #ccc; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 1000; display: none; min-width: 160px; overflow: hidden;">
+                <a href="profile/" style="display: block; padding: 10px 16px; color: #333; text-decoration: none; font-size: 14px; border-bottom: 1px solid #eee;">Личный кабинет</a>
+                <button type="button" onclick="logout()" style="display: block; width: 100%; text-align: left; padding: 10px 16px; background: none; border: none; color: #e53935; cursor: pointer; font-size: 14px;">Выйти из аккаунта</button>
+            </div>
+
+            <button class="btn-primary" id="auth-btn" onclick="openAuth()">Войти / Регистрация</button>
+        </div>
+    </header>
+
+    <!-- 2. Главный экран (Hero) с размытыми фото вузов на фоне -->
+    <section id="hero" class="hero-section">
+        <div class="hero-bg" aria-hidden="true">
+            <img src="https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&w=900&q=80" alt="">
+            <img src="https://images.unsplash.com/photo-1541829070764-84a7d30dd3f3?auto=format&fit=crop&w=900&q=80" alt="">
+            <img src="https://static.tildacdn.net/tild3037-3861-4164-b337-353266643833/university_canada.jpg" alt="">
+            <img src="https://static.tildacdn.net/tild3336-3132-4236-b834-646461626138/9c4fedea0112224bd990.jpg" alt="">
+            <div class="hero-bg-fade"></div>
+        </div>
+
+        <div class="hero-content">
+            <h1>Поступай в вузы мечты в любой точке мира бесплатно и без агентов</h1>
+            <p>Умная аналитика шансов, автоматический подбор программ и пошаговый план зачисления за пару минут.</p>
+            <div class="hero-cta">
+                <button class="btn-primary" onclick="document.getElementById('assessment').scrollIntoView({behavior:'smooth'})">Пройти анкету за 3 минуты</button>
+                <button class="btn-ghost" onclick="document.getElementById('catalog').scrollIntoView({behavior:'smooth'})">Смотреть вузы</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. Анкета-диагностика -->
+    <section id="assessment" class="section">
+        <div class="section-title">
+            <h2>Расскажи о себе — остальное сделаем мы</h2>
+            <p>Три минуты на анкету: подберём вузы под твой уровень и бюджет и построим личный план до дедлайна</p>
+        </div>
+
+        <div class="form-container">
+            <form id="full-profile-form" class="grid-form" onsubmit="return generateRecommendations(event)">
+                <div class="form-step">
+                    <h4><i class="fa-solid fa-user-graduate"></i> Кто ты сейчас</h4>
+                    <div class="form-group">
+                        <label for="form-status">Класс / курс</label>
+                        <select id="form-status" required>
+                            <option value="">Выбери, где ты учишься</option>
+                            <option>10 класс</option>
+                            <option>11 (12) класс</option>
+                            <option>Выпускник школы</option>
+                            <option>Студент колледжа / бакалавриата</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="form-major">Куда хочешь поступать</label>
+                        <select id="form-major" required>
+                            <option value="">Выбери направление</option>
+                            <option value="cs">Computer Science и IT</option>
+                            <option value="biz">Бизнес и экономика</option>
+                            <option value="eng">Инженерия</option>
+                            <option value="med">Медицина и биоинженерия</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-step">
+                    <h4><i class="fa-solid fa-award"></i> Что у тебя на руках</h4>
+                    <div class="form-group">
+                        <label for="form-ielts">Балл IELTS (если экзамена ещё нет — ожидаемый)</label>
+                        <input type="number" step="0.5" min="0" max="9" id="form-ielts" placeholder="6.5" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="form-gpa">Средний балл (GPA по шкале 4.0)</label>
+                        <input type="number" step="0.1" min="0" max="4" id="form-gpa" placeholder="3.6" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Чем занимаешься вне учёбы</label>
+                        <div class="chip-group" id="form-activities-chips" role="group" aria-label="Внеучебная активность">
+                            <button type="button" class="chip" data-value="Олимпиады">Олимпиады</button>
+                            <button type="button" class="chip" data-value="Хакатоны">Хакатоны</button>
+                            <button type="button" class="chip" data-value="Волонтёрство">Волонтёрство</button>
+                            <button type="button" class="chip" data-value="Спорт">Спорт</button>
+                            <button type="button" class="chip" data-value="Научные проекты">Научные проекты</button>
+                            <button type="button" class="chip" data-value="Свои pet-проекты">Свои pet-проекты</button>
+                            <button type="button" class="chip" data-value="Музыка / творчество">Музыка / творчество</button>
+                            <button type="button" class="chip" data-value="Стажировки / работа">Стажировки / работа</button>
+                            <button type="button" class="chip" data-value="Школьное самоуправление">Школьное самоуправление</button>
+                            <button type="button" class="chip" data-value="Дебаты / модель ООН">Дебаты / модель ООН</button>
+                            <button type="button" class="chip" data-value="Языковые курсы">Языковые курсы</button>
+                            <button type="button" class="chip" data-value="Другое">Другое</button>
+                        </div>
+                        <input type="hidden" id="form-activities" value="">
+                    </div>
+                </div>
+
+                <div class="form-step">
+                    <h4><i class="fa-solid fa-wallet"></i> Деньги и сроки</h4>
+                    <div class="form-group">
+                        <label for="form-budget">Сколько готов платить за год ($ CAD)</label>
+                        <input type="number" id="form-budget" placeholder="25000">
+                    </div>
+                    <div class="form-group">
+                        <label for="form-year">Когда планируешь поступить</label>
+                        <select id="form-year" required>
+                            <option>Осень 2027</option>
+                            <option>Осень 2028</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="form-scholarship">Нужна ли стипендия</label>
+                        <select id="form-scholarship">
+                            <option>Без стипендии не поеду</option>
+                            <option>Хочу, но справлюсь и без неё</option>
+                            <option>Стипендия не принципиальна</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primary block-btn form-submit-btn">Подобрать вузы и построить план</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- 4. Слайдер подобранных вузов -->
+    <section id="recommendations" class="section hidden">
+        <div class="section-title">
+            <h2><i class="fa-solid fa-sliders"></i> Твой персональный подбор</h2>
+            <p>Листай карточки кнопками или стрелками — слайд меняется сам каждые 10 секунд</p>
+        </div>
+
+        <div class="slider" id="uni-slider">
+            <button class="slider-btn prev" id="slider-prev" onclick="prevSlide()" aria-label="Предыдущий вуз">
+                <i class="fa-solid fa-chevron-left"></i>
+            </button>
+
+            <div class="slider-viewport">
+                <div class="slider-track" id="slider-track">
+
+                    <!-- Слайд 1 -->
+                    <article class="uni-slide" data-uni="toronto">
+                        <div class="slide-media">
+                            <img src="https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&w=900&q=80" alt="University of Toronto">
+                            <span class="slide-tag reach">Вуз мечты</span>
+                        </div>
+                        <div class="slide-body">
+                            <div class="slide-head">
+                                <div>
+                                    <h3>University of Toronto</h3>
+                                    <p class="slide-loc"><i class="fa-solid fa-location-dot"></i> 27 King's College Circle, Toronto, Ontario M5S 1A1</p>
+                                </div>
+                                <div class="slide-chance">
+                                    <strong data-chance="toronto">38%</strong>
+                                    <span>шанс поступления</span>
+                                </div>
+                            </div>
+
+                            <p class="slide-about">Сильнейший исследовательский университет страны и главная школа искусственного интеллекта Канады: здесь работала группа Хинтона. Огромный кампус в центре Торонто, больше 700 программ бакалавриата и самый жёсткий отбор на CS в стране.</p>
+
+                            <div class="slide-facts">
+                                <div class="fact"><span>Дедлайн подачи</span><strong>15 января 2027</strong></div>
+                                <div class="fact"><span>Средние баллы иностранцев</span><strong>IELTS 7.0 · GPA 3.8 / 4.0</strong></div>
+                                <div class="fact"><span>Стоимость обучения в год</span><strong>$45 000 – $62 000 CAD</strong></div>
+                                <div class="fact"><span>Официальный сайт</span><a href="https://www.utoronto.ca" target="_blank" rel="noopener">utoronto.ca <i class="fa-solid fa-arrow-up-right-from-square"></i></a></div>
+                            </div>
+
+                            <div class="slide-cols">
+                                <div class="slide-col">
+                                    <h5><i class="fa-solid fa-hand-holding-dollar"></i> Стипендии и гранты</h5>
+                                    <ul>
+                                        <li>Lester B. Pearson — полное покрытие обучения и проживания на 4 года</li>
+                                        <li>U of T International Scholar Award — от $20 000</li>
+                                        <li>Faculty-гранты отдельных колледжей — $5 000 – $12 000</li>
+                                    </ul>
+                                </div>
+                                <div class="slide-col">
+                                    <h5><i class="fa-solid fa-file-lines"></i> Документы</h5>
+                                    <ul>
+                                        <li>Аттестат и транскрипт с нотариальным переводом</li>
+                                        <li>IELTS / TOEFL / Duolingo</li>
+                                        <li>Personal Profile и эссе</li>
+                                        <li>2 рекомендации от учителей</li>
+                                        <li>Паспорт и подтверждение финансов</li>
+                                    </ul>
+                                </div>
+                                <div class="slide-col">
+                                    <h5><i class="fa-solid fa-trophy"></i> Активности для заявки</h5>
+                                    <ul>
+                                        <li>Исследовательский проект или научная статья</li>
+                                        <li>Олимпиады по математике и программированию</li>
+                                        <li>Лидерская роль в школьном клубе</li>
+                                        <li>Хакатоны и open-source</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="slide-actions">
+                                <button class="btn-primary" onclick="selectUniversity('toronto')">Выбрать и построить план</button>
+                                <button class="btn-ghost" onclick="toggleDiscussion(this, 'toronto')">
+                                    <i class="fa-regular fa-comments"></i> Чат для обсуждения
+                                </button>
+                            </div>
+
+                            <div class="discussion hidden" data-discussion="toronto">
+                                <h5>Пишут те, кто уже поступил</h5>
+                                <div class="discussion-list" id="chat-toronto"></div>
+                                <form class="discussion-form" onsubmit="postComment(event, 'toronto')">
+                                    <input type="text" placeholder="Задай вопрос студентам или поделись опытом..." required>
+                                    <button class="btn-accent" type="submit">Отправить</button>
+                                </form>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Слайд 2 -->
+                    <article class="uni-slide" data-uni="waterloo">
+                        <div class="slide-media">
+                            <img src="https://images.unsplash.com/photo-1541829070764-84a7d30dd3f3?auto=format&fit=crop&w=900&q=80" alt="University of Waterloo">
+                            <span class="slide-tag target">Идеальное совпадение</span>
+                        </div>
+                        <div class="slide-body">
+                            <div class="slide-head">
+                                <div>
+                                    <h3>University of Waterloo</h3>
+                                    <p class="slide-loc"><i class="fa-solid fa-location-dot"></i> 200 University Avenue West, Waterloo, Ontario N2L 3G1</p>
+                                </div>
+                                <div class="slide-chance">
+                                    <strong data-chance="waterloo">72%</strong>
+                                    <span>шанс поступления</span>
+                                </div>
+                            </div>
+
+                            <p class="slide-about">Центр канадской технологической индустрии и лучшая в мире программа Co-op: шесть оплачиваемых стажировок за время бакалавриата, часто в Google, Shopify и местных стартапах. Студенты выходят с 2 годами опыта в резюме.</p>
+
+                            <div class="slide-facts">
+                                <div class="fact"><span>Дедлайн подачи</span><strong>1 февраля 2027</strong></div>
+                                <div class="fact"><span>Средние баллы иностранцев</span><strong>IELTS 6.5 · GPA 3.6 / 4.0</strong></div>
+                                <div class="fact"><span>Стоимость обучения в год</span><strong>$42 000 – $55 000 CAD</strong></div>
+                                <div class="fact"><span>Официальный сайт</span><a href="https://uwaterloo.ca" target="_blank" rel="noopener">uwaterloo.ca <i class="fa-solid fa-arrow-up-right-from-square"></i></a></div>
+                            </div>
+
+                            <div class="slide-cols">
+                                <div class="slide-col">
+                                    <h5><i class="fa-solid fa-hand-holding-dollar"></i> Стипендии и гранты</h5>
+                                    <ul>
+                                        <li>International Student Entrance Scholarship — $10 000 автоматически</li>
+                                        <li>President's Scholarship of Distinction — $2 000 + грант на исследование</li>
+                                        <li>Заработок на Co-op — $40 000 – $70 000 за все стажировки</li>
+                                    </ul>
+                                </div>
+                                <div class="slide-col">
+                                    <h5><i class="fa-solid fa-file-lines"></i> Документы</h5>
+                                    <ul>
+                                        <li>Admission Information Form (AIF)</li>
+                                        <li>Транскрипт за 2 последних года</li>
+                                        <li>IELTS с 6.5 в writing и speaking</li>
+                                        <li>Видео-интервью для CS и Engineering</li>
+                                        <li>Результаты Euclid / CEMC — плюс к заявке</li>
+                                    </ul>
+                                </div>
+                                <div class="slide-col">
+                                    <h5><i class="fa-solid fa-trophy"></i> Активности для заявки</h5>
+                                    <ul>
+                                        <li>Свои проекты на GitHub</li>
+                                        <li>Хакатоны (Hack the North ценится особо)</li>
+                                        <li>Математические контесты Euclid, AMC</li>
+                                        <li>Робототехника и FIRST</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="slide-actions">
+                                <button class="btn-primary" onclick="selectUniversity('waterloo')">Выбрать и построить план</button>
+                                <button class="btn-ghost" onclick="toggleDiscussion(this, 'waterloo')">
+                                    <i class="fa-regular fa-comments"></i> Чат для обсуждения
+                                </button>
+                            </div>
+
+                            <div class="discussion hidden" data-discussion="waterloo">
+                                <h5>Пишут те, кто уже поступил</h5>
+                                <div class="discussion-list" id="chat-waterloo"></div>
+                                <form class="discussion-form" onsubmit="postComment(event, 'waterloo')">
+                                    <input type="text" placeholder="Задай вопрос студентам или поделись опытом..." required>
+                                    <button class="btn-accent" type="submit">Отправить</button>
+                                </form>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Слайд 3 -->
+                    <article class="uni-slide" data-uni="ubc">
+                        <div class="slide-media">
+                            <img src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=900&q=80" alt="University of British Columbia">
+                            <span class="slide-tag target">Идеальное совпадение</span>
+                        </div>
+                        <div class="slide-body">
+                            <div class="slide-head">
+                                <div>
+                                    <h3>University of British Columbia</h3>
+                                    <p class="slide-loc"><i class="fa-solid fa-location-dot"></i> 2329 West Mall, Vancouver, British Columbia V6T 1Z4</p>
+                                </div>
+                                <div class="slide-chance">
+                                    <strong data-chance="ubc">61%</strong>
+                                    <span>шанс поступления</span>
+                                </div>
+                            </div>
+
+                            <p class="slide-about">Кампус на берегу океана рядом с горами и один из самых щедрых фондов помощи иностранным студентам в Канаде. Заявку оценивают не только по оценкам: Personal Profile из семи эссе весит почти столько же, сколько GPA.</p>
+
+                            <div class="slide-facts">
+                                <div class="fact"><span>Дедлайн подачи</span><strong>15 января 2027</strong></div>
+                                <div class="fact"><span>Средние баллы иностранцев</span><strong>IELTS 6.5 · GPA 3.6 / 4.0</strong></div>
+                                <div class="fact"><span>Стоимость обучения в год</span><strong>$40 000 – $58 000 CAD</strong></div>
+                                <div class="fact"><span>Официальный сайт</span><a href="https://www.ubc.ca" target="_blank" rel="noopener">ubc.ca <i class="fa-solid fa-arrow-up-right-from-square"></i></a></div>
+                            </div>
+
+                            <div class="slide-cols">
+                                <div class="slide-col">
+                                    <h5><i class="fa-solid fa-hand-holding-dollar"></i> Стипендии и гранты</h5>
+                                    <ul>
+                                        <li>International Major Entrance Scholarship — до полной стоимости</li>
+                                        <li>Outstanding International Student Award — $10 000+</li>
+                                        <li>Donald A. Wehrung Award для студентов из сложных регионов</li>
+                                    </ul>
+                                </div>
+                                <div class="slide-col">
+                                    <h5><i class="fa-solid fa-file-lines"></i> Документы</h5>
+                                    <ul>
+                                        <li>Personal Profile — 5–7 эссе-ответов</li>
+                                        <li>Self-reported grades в заявке</li>
+                                        <li>Официальный транскрипт после зачисления</li>
+                                        <li>IELTS не ниже 6.5 (6.0 по секциям)</li>
+                                        <li>Отдельная форма на стипендию (IMES)</li>
+                                    </ul>
+                                </div>
+                                <div class="slide-col">
+                                    <h5><i class="fa-solid fa-trophy"></i> Активности для заявки</h5>
+                                    <ul>
+                                        <li>Долгое волонтёрство в одной организации</li>
+                                        <li>Экология и устойчивое развитие</li>
+                                        <li>Спорт, музыка, творческие проекты</li>
+                                        <li>Работа с местным сообществом</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="slide-actions">
+                                <button class="btn-primary" onclick="selectUniversity('ubc')">Выбрать и построить план</button>
+                                <button class="btn-ghost" onclick="toggleDiscussion(this, 'ubc')">
+                                    <i class="fa-regular fa-comments"></i> Чат для обсуждения
+                                </button>
+                            </div>
+
+                            <div class="discussion hidden" data-discussion="ubc">
+                                <h5>Пишут те, кто уже поступил</h5>
+                                <div class="discussion-list" id="chat-ubc"></div>
+                                <form class="discussion-form" onsubmit="postComment(event, 'ubc')">
+                                    <input type="text" placeholder="Задай вопрос студентам или поделись опытом..." required>
+                                    <button class="btn-accent" type="submit">Отправить</button>
+                                </form>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Слайд 4 -->
+                    <article class="uni-slide" data-uni="mcgill">
+                        <div class="slide-media">
+                            <img src="https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&w=900&q=80" alt="McGill University">
+                            <span class="slide-tag target">Идеальное совпадение</span>
+                        </div>
+                        <div class="slide-body">
+                            <div class="slide-head">
+                                <div>
+                                    <h3>McGill University</h3>
+                                    <p class="slide-loc"><i class="fa-solid fa-location-dot"></i> 845 Rue Sherbrooke Ouest, Montréal, Quebec H3A 0G4</p>
+                                </div>
+                                <div class="slide-chance">
+                                    <strong data-chance="mcgill">55%</strong>
+                                    <span>шанс поступления</span>
+                                </div>
+                            </div>
+
+                            <p class="slide-about">Самый «международный» университет Канады в центре двуязычного Монреаля, где жизнь дешевле, чем в Торонто и Ванкувере. Отбор почти полностью академический: решают оценки и профильные предметы, эссе требуют редко.</p>
+
+                            <div class="slide-facts">
+                                <div class="fact"><span>Дедлайн подачи</span><strong>15 января 2027</strong></div>
+                                <div class="fact"><span>Средние баллы иностранцев</span><strong>IELTS 6.5 · GPA 3.7 / 4.0</strong></div>
+                                <div class="fact"><span>Стоимость обучения в год</span><strong>$45 000 – $65 000 CAD</strong></div>
+                                <div class="fact"><span>Официальный сайт</span><a href="https://www.mcgill.ca" target="_blank" rel="noopener">mcgill.ca <i class="fa-solid fa-arrow-up-right-from-square"></i></a></div>
+                            </div>
+
+                            <div class="slide-cols">
+                                <div class="slide-col">
+                                    <h5><i class="fa-solid fa-hand-holding-dollar"></i> Стипендии и гранты</h5>
+                                    <ul>
+                                        <li>McGill Entrance Scholarship — $3 000 – $12 000</li>
+                                        <li>Major Entrance Scholarship с ежегодным продлением</li>
+                                        <li>Need-based помощь на проживание</li>
+                                    </ul>
+                                </div>
+                                <div class="slide-col">
+                                    <h5><i class="fa-solid fa-file-lines"></i> Документы</h5>
+                                    <ul>
+                                        <li>Заявка через портал Minerva</li>
+                                        <li>Транскрипты за 3 года обучения</li>
+                                        <li>IELTS или TOEFL</li>
+                                        <li>Оценки по профильным предметам (математика, физика)</li>
+                                        <li>Отдельная форма на стипендию до 21 января</li>
+                                    </ul>
+                                </div>
+                                <div class="slide-col">
+                                    <h5><i class="fa-solid fa-trophy"></i> Активности для заявки</h5>
+                                    <ul>
+                                        <li>Академические олимпиады</li>
+                                        <li>Дебаты и модели ООН</li>
+                                        <li>Научные конкурсы и исследования</li>
+                                        <li>Французский язык — большой плюс</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="slide-actions">
+                                <button class="btn-primary" onclick="selectUniversity('mcgill')">Выбрать и построить план</button>
+                                <button class="btn-ghost" onclick="toggleDiscussion(this, 'mcgill')">
+                                    <i class="fa-regular fa-comments"></i> Чат для обсуждения
+                                </button>
+                            </div>
+
+                            <div class="discussion hidden" data-discussion="mcgill">
+                                <h5>Пишут те, кто уже поступил</h5>
+                                <div class="discussion-list" id="chat-mcgill"></div>
+                                <form class="discussion-form" onsubmit="postComment(event, 'mcgill')">
+                                    <input type="text" placeholder="Задай вопрос студентам или поделись опытом..." required>
+                                    <button class="btn-accent" type="submit">Отправить</button>
+                                </form>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Слайд 5 -->
+                    <article class="uni-slide" data-uni="alberta">
+                        <div class="slide-media">
+                            <img src="https://images.unsplash.com/photo-1541829070764-84a7d30dd3f3?auto=format&fit=crop&w=900&q=80" alt="University of Alberta">
+                            <span class="slide-tag safety">Безопасный вариант</span>
+                        </div>
+                        <div class="slide-body">
+                            <div class="slide-head">
+                                <div>
+                                    <h3>University of Alberta</h3>
+                                    <p class="slide-loc"><i class="fa-solid fa-location-dot"></i> 116 Street & 85 Avenue, Edmonton, Alberta T6G 2R3</p>
+                                </div>
+                                <div class="slide-chance">
+                                    <strong data-chance="alberta">92%</strong>
+                                    <span>шанс поступления</span>
+                                </div>
+                            </div>
+
+                            <p class="slide-about">Топ-5 Канады по исследованиям при самой низкой стоимости жизни среди крупных университетов. Входной грант начисляется автоматически, а дедлайн 1 марта даёт лишний месяц, если не успеваешь с языковым сертификатом.</p>
+
+                            <div class="slide-facts">
+                                <div class="fact"><span>Дедлайн подачи</span><strong>1 марта 2027</strong></div>
+                                <div class="fact"><span>Средние баллы иностранцев</span><strong>IELTS 6.5 · GPA 3.2 / 4.0</strong></div>
+                                <div class="fact"><span>Стоимость обучения в год</span><strong>$29 000 – $40 000 CAD</strong></div>
+                                <div class="fact"><span>Официальный сайт</span><a href="https://www.ualberta.ca" target="_blank" rel="noopener">ualberta.ca <i class="fa-solid fa-arrow-up-right-from-square"></i></a></div>
+                            </div>
+
+                            <div class="slide-cols">
+                                <div class="slide-col">
+                                    <h5><i class="fa-solid fa-hand-holding-dollar"></i> Стипендии и гранты</h5>
+                                    <ul>
+                                        <li>International Admission Scholarship — $5 000 автоматически</li>
+                                        <li>Gold Standard Scholarship — до $12 000</li>
+                                        <li>Гранты факультетов инженерии и науки</li>
+                                    </ul>
+                                </div>
+                                <div class="slide-col">
+                                    <h5><i class="fa-solid fa-file-lines"></i> Документы</h5>
+                                    <ul>
+                                        <li>Заявка через ApplyAlberta</li>
+                                        <li>Транскрипт и аттестат с переводом</li>
+                                        <li>IELTS 6.5 (не ниже 5.5 по секциям)</li>
+                                        <li>Эссе для отдельных программ</li>
+                                        <li>Подтверждение финансов для визы</li>
+                                    </ul>
+                                </div>
+                                <div class="slide-col">
+                                    <h5><i class="fa-solid fa-trophy"></i> Активности для заявки</h5>
+                                    <ul>
+                                        <li>Волонтёрство любого формата</li>
+                                        <li>Школьный совет и организация событий</li>
+                                        <li>Спортивные секции</li>
+                                        <li>Подработка и стажировки</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="slide-actions">
+                                <button class="btn-primary" onclick="selectUniversity('alberta')">Выбрать и построить план</button>
+                                <button class="btn-ghost" onclick="toggleDiscussion(this, 'alberta')">
+                                    <i class="fa-regular fa-comments"></i> Чат для обсуждения
+                                </button>
+                            </div>
+
+                            <div class="discussion hidden" data-discussion="alberta">
+                                <h5>Пишут те, кто уже поступил</h5>
+                                <div class="discussion-list" id="chat-alberta"></div>
+                                <form class="discussion-form" onsubmit="postComment(event, 'alberta')">
+                                    <input type="text" placeholder="Задай вопрос студентам или поделись опытом..." required>
+                                    <button class="btn-accent" type="submit">Отправить</button>
+                                </form>
+                            </div>
+                        </div>
+                    </article>
+
+                </div>
+            </div>
+
+            <button class="slider-btn next" id="slider-next" onclick="nextSlide()" aria-label="Следующий вуз">
+                <i class="fa-solid fa-chevron-right"></i>
+            </button>
+
+            <div class="slider-footer">
+                <div class="slider-dots" id="slider-dots"></div>
+                <span class="slider-counter" id="slider-counter">1 / 5</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- 7. FAQ -->
+    <section id="faq" class="section">
+        <div class="section-title">
+            <h2>Топ часто задаваемых вопросов</h2>
+            <p>Собрали то, что спрашивают чаще всего — нажми на вопрос, чтобы раскрыть ответ</p>
+        </div>
+
+        <div class="faq-list">
+            <div class="faq-item">
+                <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">Можно ли поступить в Канаду вообще без агента?<i class="fa-solid fa-plus"></i></button>
+                <div class="faq-a"><p>Да. Все канадские университеты принимают заявки напрямую через свои порталы или через OUAC для Онтарио. Агент не даёт преимущества при отборе — приёмная комиссия смотрит только на документы. UniWise закрывает ту часть, за которую обычно платят агенту: подбор вузов, список документов и контроль сроков.</p></div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">Какой минимальный IELTS реально нужен?<i class="fa-solid fa-plus"></i></button>
+                <div class="faq-a"><p>Формальный минимум у большинства вузов — 6.5 общий балл при 6.0 по секциям. Топовые программы вроде CS в Торонто фактически ждут 7.0–7.5. Если балла не хватает, есть два пути: pathway-программа с языковым семестром или условное зачисление (conditional offer), когда сертификат досылают до июля.</p></div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">Сколько стоит год учёбы вместе с жизнью?<i class="fa-solid fa-plus"></i></button>
+                <div class="faq-a"><p>Обучение для иностранцев — от $29 000 в Альберте до $62 000 в Торонто за год. Проживание добавляет $12 000–$20 000: Ванкувер и Торонто дороже, Эдмонтон и Монреаль дешевле. Для визы нужно подтвердить примерно $20 635 на жизнь плюс первый год обучения.</p></div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">Реально ли получить полную стипендию?<i class="fa-solid fa-plus"></i></button>
+                <div class="faq-a"><p>Полных стипендий мало: Lester B. Pearson в Торонто даёт около 37 мест в год на весь мир. Куда реальнее частичные гранты $5 000–$20 000 — в Альберте и Уотерлу входные стипендии начисляются автоматически по GPA, без отдельной заявки. Стратегия рабочая такая: подаваться на автоматические гранты везде и на 1–2 конкурсные программы.</p></div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">Когда начинать готовить документы?<i class="fa-solid fa-plus"></i></button>
+                <div class="faq-a"><p>За 8–10 месяцев до дедлайна. Язык сдают первым — на подготовку и возможную пересдачу уходит 3–5 месяцев. Транскрипты и переводы занимают 3–4 недели, рекомендации просят минимум за месяц, эссе редко получается хорошим раньше третьей редакции. Личный кабинет расставляет эти шаги по датам за тебя.</p></div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">Что писать в эссе, если нет олимпиад и громких достижений?<i class="fa-solid fa-plus"></i></button>
+                <div class="faq-a"><p>Комиссия ищет не медали, а последовательность и рефлексию. Работает история про то, как ты полтора года вёл школьный клуб, помогал в семейном деле или сам собрал небольшой проект — с конкретикой и выводами. Абстрактное «я всегда любил технологии» не работает ни с медалями, ни без них.</p></div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">Можно ли работать во время учёбы?<i class="fa-solid fa-plus"></i></button>
+                <div class="faq-a"><p>Да, со студенческой визой разрешено до 24 часов в неделю в учебное время и полный день на каникулах, без отдельного разрешения. Co-op стажировки идут по отдельному permit, его оформляет университет. После бакалавриата доступен PGWP — разрешение на работу до трёх лет.</p></div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">Что делать, если пришёл отказ?<i class="fa-solid fa-plus"></i></button>
+                <div class="faq-a"><p>Отказ почти никогда не финальный. Варианты: перейти в тот же вуз через колледж-партнёр по transfer-программе, подать на январский набор вместо сентябрьского, поступить на смежную программу с меньшим конкурсом и перевестись после первого курса. Причину отказа можно запросить — приёмные комиссии обычно отвечают.</p></div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <p>© 2026 UniWise. Бесплатный доступ к образованию за рубежом.</p>
+    </footer>
+
+    <!-- Модальное окно -->
+    <div class="modal-backdrop hidden" id="auth-modal">
+        <div class="modal">
+            <button class="modal-close" type="button" onclick="closeAuth()" aria-label="Закрыть">&times;</button>
+            <h3 id="modal-title">Создай аккаунт UniWise</h3>
+            <p class="modal-sub">Нужен, чтобы сохранять анкету, план и переписку в чатах вузов</p>
+
+            <form onsubmit="handleAuthSubmit(event)">
+                <div class="form-group" id="name-group">
+                    <label for="auth-name">Имя</label>
+                    <input type="text" id="auth-name" placeholder="Как тебя зовут">
+                </div>
+
+                <div class="form-group">
+                    <label for="auth-email">E-mail</label>
+                    <input type="email" id="auth-email" placeholder="you@mail.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="auth-password">Пароль</label>
+                    <input type="password" id="auth-password" placeholder="••••••••" required>
+                </div>
+
+                <button type="submit" id="auth-submit-btn" class="btn-primary block-btn">Зарегистрироваться</button>
+            </form>
+
+            <div style="margin-top: 15px; text-align: center; font-size: 14px;">
+                <span id="auth-switch-text">Уже есть аккаунт?</span>
+                <a href="#" id="auth-switch-link" onclick="toggleAuthMode(event)" style="color: #007bff; text-decoration: underline;">Войти</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Плавающая кнопка ИИ-чата (слева снизу, всегда видна) -->
+    <button class="ai-fab" id="ai-fab" onclick="toggleAiChat()" aria-label="Открыть чат с ИИ">
+        <i class="fa-solid fa-wand-magic-sparkles"></i>
+        <span class="ai-fab-pulse"></span>
+    </button>
+
+    <div class="ai-window hidden" id="ai-window">
+        <div class="ai-window-head">
+            <div class="ai-window-title">
+                <i class="fa-solid fa-brain"></i>
+                <div>
+                    <strong>UniWise AI</strong>
+                    <small>Отвечает за пару секунд</small>
+                </div>
+            </div>
+            <button class="ai-close" onclick="toggleAiChat()" aria-label="Закрыть чат">&times;</button>
+        </div>
+
+        <div class="ai-window-body" id="ai-messages">
+            <div class="chat-msg bot">Привет! Я ИИ-ассистент UniWise. Спроси про шансы, стипендии, визу или эссе — или нажми на подсказку ниже.</div>
+        </div>
+
+        <div class="ai-suggestions">
+            <button onclick="askAi('Какие шансы с IELTS 6.5?')">Шансы с IELTS 6.5</button>
+            <button onclick="askAi('Как получить стипендию?')">Стипендии</button>
+            <button onclick="askAi('Что нужно для визы?')">Виза</button>
+        </div>
+
+        <form class="ai-window-form" onsubmit="sendAiMessage(event)">
+            <input type="text" id="ai-input" placeholder="Напиши свой вопрос..." required>
+            <button class="btn-accent" type="submit"><i class="fa-solid fa-paper-plane"></i></button>
+        </form>
+    </div>
+
+    <script src="script/script.js"></script>
+    <script src="script/auth.js"></script>
+    <script src="script/chat.js"></script>
+    <script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v31edd6df95cf4e85bb4c19e7a9bdbcba1788362987495" integrity="sha512-iIg7k2xntmwu6/uSb5tpc/hySgZc4eoL31yB29W6tJFo2akwjPWcEqnCEdJvGexCL0KEQwVYv5BlowfhVz26hg==" data-cf-beacon='{"version":"2024.11.0","token":"5a11dbdd0c3241f1ad5020fdefbeae31","spa":2}' crossorigin="anonymous"></script>
+</body>
+</html>

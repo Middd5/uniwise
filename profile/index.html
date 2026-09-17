@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Личный кабинет</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="../style/style.css">
+    <link rel="stylesheet" href="../style/header.css">
+    <link rel="stylesheet" href="../style/account.css">
+    <link rel="stylesheet" href="../style/footer.css">
+    <link rel="stylesheet" href="../style/auth.css">
+    <link rel="stylesheet" href="../style/chat.css">
+    <link rel="stylesheet" href="../style/responsive.css">
+</head>
+<body>
+    <!-- 1. Прозрачная Шапка -->
+    <header class="navbar">
+        <div class="logo">
+            <!-- Эмблема UniWise -->
+            <svg width="36" height="36" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- Градиент для U -->
+                <defs>
+                    <linearGradient id="uniwise-grad" x1="20" y1="20" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+                        <stop offset="0%" stop-color="#14248A" />
+                        <stop offset="100%" stop-color="#998FC7" />
+                    </linearGradient>
+                    <linearGradient id="spark-grad" x1="0" y1="0" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#F9F5FF" />
+                        <stop offset="100%" stop-color="#D4C2FC" />
+                    </linearGradient>
+                </defs>
+
+                <!-- Монограмма 'U' -->
+                <path d="M 30 25 L 48 25 L 48 65 C 48 71.6 53.4 77 60 77 C 66.6 77 72 71.6 72 65 L 72 25 L 90 25 L 90 65 C 90 81.5 76.5 95 60 95 C 43.5 95 30 81.5 30 65 Z" fill="url(#uniwise-grad)" />
+
+                <!-- Ромб (Верхушка шапочки над U) -->
+                <path d="M 60 15 L 85 27 L 60 39 L 35 27 Z" fill="#D4C2FC" opacity="0.9" />
+
+                <!-- Spark -->
+                <path d="M 60 48 Q 60 58 50 58 Q 60 58 60 68 Q 60 58 70 58 Q 60 58 60 48 Z" fill="url(#spark-grad)" />
+            </svg>
+            <a href="../">UniWise</a>
+        </div>
+        <nav class="nav-links">
+            <a href="../">Главная</a>
+            <a href="../#assessment">Анкета</a>
+            <a href="../">Подбор вузов</a>
+            <a href="../catalog/">Каталог</a>
+            <a href="./">Личный кабинет</a>
+            <a href="../#faq">Вопросы</a>
+        </nav>
+        <div class="nav-auth" style="position: relative;">
+            <span id="user-chip" class="user-chip hidden" onclick="toggleUserDropdown(event)" style="cursor: pointer; font-weight: bold;"></span>
+
+            <div id="user-dropdown" class="user-dropdown hidden" style="position: absolute; right: 0; top: 100%; margin-top: 8px; background: #fff; border: 1px solid #ccc; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 1000; display: none; min-width: 160px; overflow: hidden;">
+                <a href="./" style="display: block; padding: 10px 16px; color: #333; text-decoration: none; font-size: 14px; border-bottom: 1px solid #eee;">Личный кабинет</a>
+                <button type="button" onclick="logout()" style="display: block; width: 100%; text-align: left; padding: 10px 16px; background: none; border: none; color: #e53935; cursor: pointer; font-size: 14px;">Выйти из аккаунта</button>
+            </div>
+
+            <button class="btn-primary" id="auth-btn" onclick="openAuth()">Войти / Регистрация</button>
+        </div>
+    </header>
+
+    <!-- 6. Личный кабинет: план под дедлайн + трекер дедлайнов -->
+    <section id="dashboard" class="section">
+        <div class="section-title">
+            <h2>Личный кабинет</h2>
+            <p>План действий считается от дедлайна выбранного вуза и от разницы между твоими баллами и требованиями</p>
+        </div>
+
+        <!-- Трекер дедлайнов -->
+        <div class="dash-deadlines">
+            <h3><i class="fa-regular fa-calendar-days"></i> Трекер дедлайнов приёма (Осень 2027)</h3>
+            <p class="dash-deadlines-sub">Полный календарь заявочной кампании — от открытия подачи до первого дня учёбы. Обновляется в реальном времени.</p>
+
+            <div class="timeline-container">
+                <div class="timeline-item" data-date="2026-10-01">
+                    <div class="time-badge">1 окт 2026</div>
+                    <div class="time-content">
+                        <span class="time-cat cat-apply">Подача</span>
+                        <h4>Открытие приёма заявок</h4>
+                        <p>OUAC открывается для университетов Онтарио (U of T, Waterloo и другие) — можно начинать подачу документов.</p>
+                        <span class="time-left" data-countdown></span>
+                    </div>
+                </div>
+                <div class="timeline-item" data-date="2026-11-01">
+                    <div class="time-badge">1 ноя 2026</div>
+                    <div class="time-content">
+                        <span class="time-cat cat-scholarship">Стипендия</span>
+                        <h4>Ранняя заявка на стипендию Trinity College (U of T)</h4>
+                        <p>Отдельная форма для претендентов на повышенные стипендии — подаётся заранее, до основного дедлайна.</p>
+                        <span class="time-left" data-countdown></span>
+                    </div>
+                </div>
+                <div class="timeline-item" data-date="2026-11-15">
+                    <div class="time-badge">15 ноя 2026</div>
+                    <div class="time-content">
+                        <span class="time-cat cat-apply">Подача</span>
+                        <h4>Ранний раунд (Early Admission)</h4>
+                        <p>Подача документов на стипендии Университета Торонто по раннему раунду рассмотрения.</p>
+                        <span class="time-left" data-countdown></span>
+                    </div>
+                </div>
+                <div class="timeline-item" data-date="2026-12-01">
+                    <div class="time-badge">1 дек 2026</div>
+                    <div class="time-content">
+                        <span class="time-cat cat-apply">Подача</span>
+                        <h4>Дедлайн McGill по ряду программ</h4>
+                        <p>Часть конкурентных программ (например, инженерия) закрывает приём раньше основного потока.</p>
+                        <span class="time-left" data-countdown></span>
+                    </div>
+                </div>
+                <div class="timeline-item highlight" data-date="2027-01-15">
+                    <div class="time-badge">15 янв 2027</div>
+                    <div class="time-content">
+                        <span class="time-cat cat-apply">Подача</span>
+                        <h4>Основной дедлайн (U of T, UBC, McGill)</h4>
+                        <p>Крайний срок отправки основного пакета документов, транскриптов и мотивационных писем.</p>
+                        <div class="countdown" id="countdown-timer">Считаем время до дедлайна...</div>
+                    </div>
+                </div>
+                <div class="timeline-item" data-date="2027-01-21">
+                    <div class="time-badge">21 янв 2027</div>
+                    <div class="time-content">
+                        <span class="time-cat cat-scholarship">Стипендия</span>
+                        <h4>Форма на стипендию McGill</h4>
+                        <p>Отдельная заявка на стипендию — подаётся через несколько дней после основного пакета документов.</p>
+                        <span class="time-left" data-countdown></span>
+                    </div>
+                </div>
+                <div class="timeline-item" data-date="2027-02-01">
+                    <div class="time-badge">1 фев 2027</div>
+                    <div class="time-content">
+                        <span class="time-cat cat-apply">Подача</span>
+                        <h4>Дедлайн University of Waterloo</h4>
+                        <p>Закрытие приёма AIF-формы и основного пакета для программ Waterloo, включая CS и инженерию.</p>
+                        <span class="time-left" data-countdown></span>
+                    </div>
+                </div>
+                <div class="timeline-item" data-date="2027-03-01">
+                    <div class="time-badge">1 мар 2027</div>
+                    <div class="time-content">
+                        <span class="time-cat cat-apply">Подача</span>
+                        <h4>Закрытие подач (U Alberta, Calgary)</h4>
+                        <p>Финишная прямая для отправки языковых сертификатов и последних документов.</p>
+                        <span class="time-left" data-countdown></span>
+                    </div>
+                </div>
+                <div class="timeline-item" data-date="2027-04-01">
+                    <div class="time-badge">1 апр 2027</div>
+                    <div class="time-content">
+                        <span class="time-cat cat-apply">Подача</span>
+                        <h4>Дедлайн подтверждения места (депозит)</h4>
+                        <p>После получения предложения нужно внести депозит, чтобы закрепить место в кампусе.</p>
+                        <span class="time-left" data-countdown></span>
+                    </div>
+                </div>
+                <div class="timeline-item" data-date="2027-06-01">
+                    <div class="time-badge">1 июн 2027</div>
+                    <div class="time-content">
+                        <span class="time-cat cat-visa">Виза</span>
+                        <h4>Финальные транскрипты и итоговые оценки</h4>
+                        <p>Вузы запрашивают финальный аттестат и оценки — без них зачисление остаётся условным.</p>
+                        <span class="time-left" data-countdown></span>
+                    </div>
+                </div>
+                <div class="timeline-item" data-date="2027-06-15">
+                    <div class="time-badge">15 июн 2027</div>
+                    <div class="time-content">
+                        <span class="time-cat cat-visa">Виза</span>
+                        <h4>Рекомендуемая подача на Study Permit</h4>
+                        <p>Оптимальная дата подачи заявления на студенческую визу с запасом на рассмотрение и возможный запрос документов.</p>
+                        <span class="time-left" data-countdown></span>
+                    </div>
+                </div>
+                <div class="timeline-item" data-date="2027-09-01">
+                    <div class="time-badge">1 сен 2027</div>
+                    <div class="time-content">
+                        <span class="time-cat cat-start">Старт учёбы</span>
+                        <h4>Начало учебного года</h4>
+                        <p>Первый день занятий и ориентационная неделя (Orientation Week) в большинстве вузов Канады.</p>
+                        <span class="time-left" data-countdown></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dash-empty" id="dash-empty">
+            <i class="fa-solid fa-route"></i>
+            <h4>Плана пока нет</h4>
+            <p>Зарегистрируйся, заполни анкету и выбери вуз в слайдере — кабинет соберёт дорожную карту с датами.</p>
+            <button class="btn-primary" onclick="document.getElementById('assessment').scrollIntoView({behavior:'smooth'})">Заполнить анкету</button>
+        </div>
+
+        <div class="dash-grid hidden" id="dash-grid">
+            <aside class="dash-profile">
+                <div class="dash-avatar" id="dash-avatar">U</div>
+                <h4 id="dash-name">Абитуриент</h4>
+                <p class="dash-sub" id="dash-status">Профиль заполнен</p>
+                <ul class="dash-stats" id="dash-stats"></ul>
+                <div class="dash-target" id="dash-target"></div>
+            </aside>
+
+            <div class="dash-plan">
+                <div class="plan-head">
+                    <div>
+                        <h3 id="plan-uni">—</h3>
+                        <p id="plan-deadline">—</p>
+                    </div>
+                    <div class="plan-countdown" id="plan-countdown">—</div>
+                </div>
+
+                <div class="plan-progress">
+                    <div class="plan-progress-bar"><span id="plan-progress-fill"></span></div>
+                    <small id="plan-progress-label">Готовность профиля</small>
+                </div>
+
+                <div class="plan-gaps" id="plan-gaps"></div>
+
+                <h4 class="plan-subtitle">Дорожная карта по неделям</h4>
+                <ol class="plan-timeline" id="plan-timeline"></ol>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <p>© 2026 UniWise. Бесплатный доступ к образованию за рубежом.</p>
+    </footer>
+
+    <!-- Модальное окно -->
+    <div class="modal-backdrop hidden" id="auth-modal">
+        <div class="modal">
+            <button class="modal-close" type="button" onclick="closeAuth()" aria-label="Закрыть">&times;</button>
+            <h3 id="modal-title">Создай аккаунт UniWise</h3>
+            <p class="modal-sub">Нужен, чтобы сохранять анкету, план и переписку в чатах вузов</p>
+
+            <form onsubmit="handleAuthSubmit(event)">
+                <div class="form-group" id="name-group">
+                    <label for="auth-name">Имя</label>
+                    <input type="text" id="auth-name" placeholder="Как тебя зовут">
+                </div>
+
+                <div class="form-group">
+                    <label for="auth-email">E-mail</label>
+                    <input type="email" id="auth-email" placeholder="you@mail.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="auth-password">Пароль</label>
+                    <input type="password" id="auth-password" placeholder="••••••••" required>
+                </div>
+
+                <button type="submit" id="auth-submit-btn" class="btn-primary block-btn">Зарегистрироваться</button>
+            </form>
+
+            <div style="margin-top: 15px; text-align: center; font-size: 14px;">
+                <span id="auth-switch-text">Уже есть аккаунт?</span>
+                <a href="#" id="auth-switch-link" onclick="toggleAuthMode(event)" style="color: #007bff; text-decoration: underline;">Войти</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Плавающая кнопка ИИ-чата (слева снизу, всегда видна) -->
+    <button class="ai-fab" id="ai-fab" onclick="toggleAiChat()" aria-label="Открыть чат с ИИ">
+        <i class="fa-solid fa-wand-magic-sparkles"></i>
+        <span class="ai-fab-pulse"></span>
+    </button>
+
+    <div class="ai-window hidden" id="ai-window">
+        <div class="ai-window-head">
+            <div class="ai-window-title">
+                <i class="fa-solid fa-brain"></i>
+                <div>
+                    <strong>UniWise AI</strong>
+                    <small>Отвечает за пару секунд</small>
+                </div>
+            </div>
+            <button class="ai-close" onclick="toggleAiChat()" aria-label="Закрыть чат">&times;</button>
+        </div>
+
+        <div class="ai-window-body" id="ai-messages">
+            <div class="chat-msg bot">Привет! Я ИИ-ассистент UniWise. Спроси про шансы, стипендии, визу или эссе — или нажми на подсказку ниже.</div>
+        </div>
+
+        <div class="ai-suggestions">
+            <button onclick="askAi('Какие шансы с IELTS 6.5?')">Шансы с IELTS 6.5</button>
+            <button onclick="askAi('Как получить стипендию?')">Стипендии</button>
+            <button onclick="askAi('Что нужно для визы?')">Виза</button>
+        </div>
+
+        <form class="ai-window-form" onsubmit="sendAiMessage(event)">
+            <input type="text" id="ai-input" placeholder="Напиши свой вопрос..." required>
+            <button class="btn-accent" type="submit"><i class="fa-solid fa-paper-plane"></i></button>
+        </form>
+    </div>
+
+    <script src="../script/script.js"></script>
+    <script src="../script/auth.js"></script>
+    <script src="../script/chat.js"></script>
+    <script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v31edd6df95cf4e85bb4c19e7a9bdbcba1788362987495" integrity="sha512-iIg7k2xntmwu6/uSb5tpc/hySgZc4eoL31yB29W6tJFo2akwjPWcEqnCEdJvGexCL0KEQwVYv5BlowfhVz26hg==" data-cf-beacon='{"version":"2024.11.0","token":"5a11dbdd0c3241f1ad5020fdefbeae31","spa":2}' crossorigin="anonymous"></script>
+</body>
+</html>

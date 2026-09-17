@@ -1,0 +1,17 @@
+/* ---------- responsive ---------- */
+
+@media (max-width: 960px) {
+    .hero-section { grid-template-columns: 1fr; }
+    .grid-form { grid-template-columns: 1fr; }
+    .uni-slide { grid-template-columns: 1fr; }
+    .slide-media { clip-path: none; }
+    .slide-media img { min-height: 200px; }
+    .slide-cols { grid-template-columns: 1fr; }
+    .dash-grid { grid-template-columns: 1fr; }
+    .timeline-item { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 560px) {
+    .slide-facts { grid-template-columns: 1fr; }
+    .ai-window { left: 0.75rem; right: 0.75rem; width: auto; }
+}
