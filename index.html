@@ -127,20 +127,28 @@
                     </div>
                     <div class="form-group">
                         <label>Чем занимаешься вне учёбы</label>
-                        <div class="chip-group" id="form-activities-chips" role="group" aria-label="Внеучебная активность">
-                            <button type="button" class="chip" data-value="Олимпиады">Олимпиады</button>
-                            <button type="button" class="chip" data-value="Хакатоны">Хакатоны</button>
-                            <button type="button" class="chip" data-value="Волонтёрство">Волонтёрство</button>
-                            <button type="button" class="chip" data-value="Спорт">Спорт</button>
-                            <button type="button" class="chip" data-value="Научные проекты">Научные проекты</button>
-                            <button type="button" class="chip" data-value="Свои pet-проекты">Свои pet-проекты</button>
-                            <button type="button" class="chip" data-value="Музыка / творчество">Музыка / творчество</button>
-                            <button type="button" class="chip" data-value="Стажировки / работа">Стажировки / работа</button>
-                            <button type="button" class="chip" data-value="Школьное самоуправление">Школьное самоуправление</button>
-                            <button type="button" class="chip" data-value="Дебаты / модель ООН">Дебаты / модель ООН</button>
-                            <button type="button" class="chip" data-value="Языковые курсы">Языковые курсы</button>
-                            <button type="button" class="chip" data-value="Другое">Другое</button>
+                        <div class="custom-multiselect">
+                            <div class="select-box" onclick="toggleDropdown()">
+                                <span id="select-placeholder">Выберите направления...</span>
+                                <span class="arrow">▼</span>
+                            </div>
+
+                            <div class="dropdown-options" id="dropdown-options">
+                                <label><input type="checkbox" value="Олимпиады" onchange="updateSelection()"> Олимпиады</label>
+                                <label><input type="checkbox" value="Хакатоны" onchange="updateSelection()"> Хакатоны</label>
+                                <label><input type="checkbox" value="Волонтёрство" onchange="updateSelection()"> Волонтёрство</label>
+                                <label><input type="checkbox" value="Спорт" onchange="updateSelection()"> Спорт</label>
+                                <label><input type="checkbox" value="Научные проекты" onchange="updateSelection()"> Научные проекты</label>
+                                <label><input type="checkbox" value="Свои pet-проекты" onchange="updateSelection()"> Свои pet-проекты</label>
+                                <label><input type="checkbox" value="Музыка / творчество" onchange="updateSelection()"> Музыка / творчество</label>
+                                <label><input type="checkbox" value="Стажировки / работа" onchange="updateSelection()"> Стажировки / работа</label>
+                                <label><input type="checkbox" value="Школьное самоуправление" onchange="updateSelection()"> Школьное самоуправление</label>
+                                <label><input type="checkbox" value="Дебаты / модель ООН" onchange="updateSelection()"> Дебаты / модель ООН</label>
+                                <label><input type="checkbox" value="Языковые курсы" onchange="updateSelection()"> Языковые курсы</label>
+                                <label><input type="checkbox" value="Другое" onchange="updateSelection()"> Другое</label>
+                            </div>
                         </div>
+
                         <input type="hidden" id="form-activities" value="">
                     </div>
                 </div>

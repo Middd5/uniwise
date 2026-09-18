@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// 2. Быстрый расчет шансов в форме первого экрана
+// 1. Быстрый расчет шансов в форме первого экрана
 document.getElementById('quick-calc-form').addEventListener('submit', function(e) {
     e.preventDefault();
     
@@ -45,6 +45,49 @@ document.getElementById('quick-calc-form').addEventListener('submit', function(e
 
     resultDiv.innerHTML = `<strong>Результат экспресс-анализа:</strong><br>Твой средний шанс поступления в Канаду: <span>${chance}</span>. Пройди полную анкету ниже.`;
 });
+
+// 2. Dropdown выбора направлении
+function toggleDropdown() {
+    const dropdown = document.getElementById('dropdown-options');
+    if (dropdown) {
+        dropdown.classList.toggle('show');
+    }
+}
+
+// Закрытие списка при клике в любую другую область экрана
+document.addEventListener('click', function(event) {
+    const select = document.querySelector('.custom-multiselect');
+    if (select && !select.contains(event.target)) {
+        const dropdown = document.getElementById('dropdown-options');
+        if (dropdown) dropdown.classList.remove('show');
+    }
+});
+
+// Обновление текста и запись значений в hidden input
+function updateSelection() {
+    const checkboxes = document.querySelectorAll('#dropdown-options input[type="checkbox"]:checked');
+    const selectedValues = Array.from(checkboxes).map(cb => cb.value);
+
+    const placeholder = document.getElementById('select-placeholder');
+    const hiddenInput = document.getElementById('form-activities');
+
+    if (selectedValues.length === 0) {
+        if (placeholder) {
+            placeholder.textContent = 'Выберите направления...';
+            placeholder.style.color = '#94a3b8';
+        }
+    } else {
+        if (placeholder) {
+            placeholder.textContent = selectedValues.join(', ');
+            placeholder.style.color = '#1e293b';
+        }
+    }
+
+    // Сохраняем значения в скрытом поле для отправки формы
+    if (hiddenInput) {
+        hiddenInput.value = selectedValues.join(', ');
+    }
+}
 
 // 3. Симуляция генерации 3 университетов после заполнения анкеты
 function generateRecommendations() {
