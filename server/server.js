@@ -3,10 +3,29 @@ const { Pool } = require('pg');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const { GoogleGenerativeAI } = require('@google/generative-ai'); // npm i @google/generative-ai
 require('dotenv').config();
 
 const app = express();
-app.use(cors());
+
+// ---------- CORS ----------
+// В деве можно оставить open cors(), но для продакшена лучше явно
+// перечислить адреса фронтенда, которые могут стучаться к API.
+const allowedOrigins = (process.env.CORS_ORIGINS || 'http://localhost:5500,http://127.0.0.1:5500,http://localhost:3000,http://localhost:63342')
+    .split(',')
+    .map(o => o.trim());
+
+app.use(cors({
+    origin: function (origin, callback) {
+        // разрешаем запросы без Origin (например, curl/Postman) и из списка
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    }
+}));
+
 app.use(express.json());
 
 const pool = new Pool({
@@ -16,6 +35,11 @@ const pool = new Pool({
     password: process.env.DB_PASSWORD,
     port: process.env.DB_PORT,
 });
+
+// ---------- Gemini ----------
+// КЛЮЧ ЖИВЁТ ТОЛЬКО ЗДЕСЬ, В .env НА СЕРВЕРЕ. Никогда не передавай его во фронтенд.
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const chatModel = genAI.getGenerativeModel({ model: 'gemini-3.5-flash-lite' });
 
 // Регистрация
 app.post('/api/register', async (req, res) => {
@@ -65,6 +89,87 @@ app.get('/api/me', async (req, res) => {
         res.json(result.rows[0]);
     } catch {
         res.status(403).json({ error: 'Невалидный токен' });
+    }
+});
+
+// ---------- ИИ-чат ----------
+app.post('/api/chat', async (req, res) => {
+    const { message, history } = req.body;
+
+    if (!message || typeof message !== 'string' || !message.trim()) {
+        return res.status(400).json({ error: 'Сообщение не может быть пустым' });
+    }
+
+    try {
+        // Системный промпт: задаём роль ассистента по поступлению
+        const systemInstruction = `Ты — ИИ-ассистент UniWise, помогаешь абитуриентам с поступлением в
+университеты Канады: шансы на поступление, стипендии, визовые вопросы, эссе.
+Отвечай кратко, по делу, на русском языке.`;
+
+        // Переводим историю в формат Gemini (role: 'user' | 'model')
+        const formattedHistory = Array.isArray(history)
+            ? history.map(h => ({
+                role: h.role === 'model' ? 'model' : 'user',
+                parts: [{ text: h.text }]
+            }))
+            : [];
+
+        const chat = chatModel.startChat({
+            history: formattedHistory,
+            systemInstruction: { role: 'system', parts: [{ text: systemInstruction }] }
+        });
+
+        const result = await chat.sendMessage(message);
+        const reply = result.response.text();
+
+        res.json({ success: true, reply });
+    } catch (err) {
+        console.error('Ошибка Gemini API (chat):', err);
+        res.status(500).json({ error: 'Не удалось получить ответ от ИИ. Попробуйте позже.' });
+    }
+});
+
+// ---------- Генерация карточки университета ----------
+app.post('/api/university-card', async (req, res) => {
+    const { query } = req.body;
+
+    if (!query || typeof query !== 'string' || !query.trim()) {
+        return res.status(400).json({ error: 'Не указан запрос для подбора университета' });
+    }
+
+    try {
+        const prompt = `Подбери один подходящий университет в Канаде под запрос: "${query}".
+Верни ТОЛЬКО валидный JSON без markdown-разметки и без пояснений, строго в формате:
+{
+  "name": "Название университета",
+  "rank": "Краткий рейтинг, например '#1 в Канаде'",
+  "image": "URL картинки (можно с unsplash.com)",
+  "desc": "Описание в 1-2 предложения",
+  "majors": ["cs" | "biz" | "eng"],
+  "stats": { "ielts": "6.5+", "gpa": "3.5 / 4.0", "tuition": "$30k - $45k" },
+  "details": { "docs": "какие документы нужны", "activities": "какие активности ценятся" },
+  "deadline": "дата дедлайна",
+  "link": "официальный сайт университета"
+}`;
+
+        const result = await chatModel.generateContent(prompt);
+        let rawText = result.response.text().trim();
+
+        // На случай если модель всё же обернёт ответ в ```json ... ```
+        rawText = rawText.replace(/^```json\s*|```$/g, '').trim();
+
+        let uniData;
+        try {
+            uniData = JSON.parse(rawText);
+        } catch (parseErr) {
+            console.error('Не удалось распарсить JSON от Gemini:', rawText);
+            return res.status(502).json({ error: 'ИИ вернул некорректный формат данных' });
+        }
+
+        res.json(uniData);
+    } catch (err) {
+        console.error('Ошибка Gemini API (university-card):', err);
+        res.status(500).json({ error: 'Не удалось сгенерировать карточку университета' });
     }
 });
 
