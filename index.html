@@ -95,24 +95,37 @@
                 <div class="form-step">
                     <h4><i class="fa-solid fa-user-graduate"></i> Кто ты сейчас</h4>
                     <div class="form-group">
-                        <label for="form-status">Класс / курс</label>
-                        <select id="form-status" required>
-                            <option value="">Выбери, где ты учишься</option>
-                            <option>10 класс</option>
-                            <option>11 (12) класс</option>
-                            <option>Выпускник школы</option>
-                            <option>Студент колледжа / бакалавриата</option>
-                        </select>
+                        <label>Класс / курс</label>
+                        <div class="custom-select" id="select-status">
+                            <div class="select-box" onclick="toggleSingleSelect(this)">
+                                <span class="select-placeholder">Выбери, где ты учишься</span>
+                                <span class="arrow">▼</span>
+                            </div>
+                            <div class="dropdown-options">
+                                <label><input type="radio" name="status_radio" value="10 класс" onchange="handleRadioSelect(this, 'form-status')"> 10 класс</label>
+                                <label><input type="radio" name="status_radio" value="11 (12) класс" onchange="handleRadioSelect(this, 'form-status')"> 11 (12) класс</label>
+                                <label><input type="radio" name="status_radio" value="Выпускник школы" onchange="handleRadioSelect(this, 'form-status')"> Выпускник школы</label>
+                                <label><input type="radio" name="status_radio" value="Студент колледжа / бакалавриата" onchange="handleRadioSelect(this, 'form-status')"> Студент колледжа / бакалавриата</label>
+                            </div>
+                        </div>
+                        <input type="hidden" id="form-status" required>
                     </div>
+
                     <div class="form-group">
-                        <label for="form-major">Куда хочешь поступать</label>
-                        <select id="form-major" required>
-                            <option value="">Выбери направление</option>
-                            <option value="cs">Computer Science и IT</option>
-                            <option value="biz">Бизнес и экономика</option>
-                            <option value="eng">Инженерия</option>
-                            <option value="med">Медицина и биоинженерия</option>
-                        </select>
+                        <label>Куда хочешь поступать</label>
+                        <div class="custom-select" id="select-major">
+                            <div class="select-box" onclick="toggleSingleSelect(this)">
+                                <span class="select-placeholder">Выбери направление</span>
+                                <span class="arrow">▼</span>
+                            </div>
+                            <div class="dropdown-options">
+                                <label><input type="radio" name="major_radio" value="cs" data-label="Computer Science и IT" onchange="handleRadioSelect(this, 'form-major')"> Computer Science и IT</label>
+                                <label><input type="radio" name="major_radio" value="biz" data-label="Бизнес и экономика" onchange="handleRadioSelect(this, 'form-major')"> Бизнес и экономика</label>
+                                <label><input type="radio" name="major_radio" value="eng" data-label="Инженерия" onchange="handleRadioSelect(this, 'form-major')"> Инженерия</label>
+                                <label><input type="radio" name="major_radio" value="med" data-label="Медицина и биоинженерия" onchange="handleRadioSelect(this, 'form-major')"> Медицина и биоинженерия</label>
+                            </div>
+                        </div>
+                        <input type="hidden" id="form-major" required>
                     </div>
                 </div>
 
@@ -160,20 +173,37 @@
                         <label for="form-budget">Сколько готов платить за год ($ CAD)</label>
                         <input type="number" id="form-budget" placeholder="25000">
                     </div>
+
                     <div class="form-group">
-                        <label for="form-year">Когда планируешь поступить</label>
-                        <select id="form-year" required>
-                            <option>Осень 2027</option>
-                            <option>Осень 2028</option>
-                        </select>
+                        <label>Год поступления</label>
+                        <div class="custom-select" id="select-year">
+                            <div class="select-box" onclick="toggleSingleSelect(this)">
+                                <span class="select-placeholder">Выбери год</span>
+                                <span class="arrow">▼</span>
+                            </div>
+                            <div class="dropdown-options">
+                                <label><input type="radio" name="year_radio" value="2026" onchange="handleRadioSelect(this, 'form-year')"> 2026 год</label>
+                                <label><input type="radio" name="year_radio" value="2027" onchange="handleRadioSelect(this, 'form-year')"> 2027 год</label>
+                                <label><input type="radio" name="year_radio" value="2028" onchange="handleRadioSelect(this, 'form-year')"> 2028 год</label>
+                            </div>
+                        </div>
+                        <input type="hidden" id="form-year" required>
                     </div>
+
                     <div class="form-group">
-                        <label for="form-scholarship">Нужна ли стипендия</label>
-                        <select id="form-scholarship">
-                            <option>Без стипендии не поеду</option>
-                            <option>Хочу, но справлюсь и без неё</option>
-                            <option>Стипендия не принципиальна</option>
-                        </select>
+                        <label>Нужна ли стипендия / грант</label>
+                        <div class="custom-select" id="select-scholarship">
+                            <div class="select-box" onclick="toggleSingleSelect(this)">
+                                <span class="select-placeholder">Укажи потребность</span>
+                                <span class="arrow">▼</span>
+                            </div>
+                            <div class="dropdown-options">
+                                <label><input type="radio" name="scholarship_radio" value="full" data-label="Нужен полный грант (100%)" onchange="handleRadioSelect(this, 'form-scholarship')"> Нужен полный грант (100%)</label>
+                                <label><input type="radio" name="scholarship_radio" value="partial" data-label="Рассматриваю частичную скидку" onchange="handleRadioSelect(this, 'form-scholarship')"> Рассматриваю частичную скидку</label>
+                                <label><input type="radio" name="scholarship_radio" value="none" data-label="Оплата за свой счёт" onchange="handleRadioSelect(this, 'form-scholarship')"> Оплата за свой счёт</label>
+                            </div>
+                        </div>
+                        <input type="hidden" id="form-scholarship" required>
                     </div>
                 </div>
 

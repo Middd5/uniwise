@@ -46,24 +46,54 @@ document.getElementById('quick-calc-form').addEventListener('submit', function(e
     resultDiv.innerHTML = `<strong>Результат экспресс-анализа:</strong><br>Твой средний шанс поступления в Канаду: <span>${chance}</span>. Пройди полную анкету ниже.`;
 });
 
-// 2. Dropdown выбора направлении
+// 2. Form
+// Одиночный выбор (Single-select с radio)
+function toggleSingleSelect(selectBoxElement) {
+    const parentContainer = selectBoxElement.closest('.custom-select');
+
+    // Закрываем все остальные открытые одиночные списки
+    document.querySelectorAll('.custom-select.open').forEach(el => {
+        if (el !== parentContainer) el.classList.remove('open');
+    });
+
+    // Закрываем мультиселект, если он открыт
+    const multiselectDropdown = document.getElementById('dropdown-options');
+    if (multiselectDropdown) multiselectDropdown.classList.remove('show');
+
+    parentContainer.classList.toggle('open');
+}
+
+function handleRadioSelect(radioInput, hiddenInputId) {
+    const parentContainer = radioInput.closest('.custom-select');
+    const placeholderSpan = parentContainer.querySelector('.select-placeholder');
+    const hiddenInput = document.getElementById(hiddenInputId);
+
+    // Берем текст из data-label или из текста label
+    const labelText = radioInput.dataset.label || radioInput.closest('label').textContent.trim();
+
+    if (placeholderSpan) {
+        placeholderSpan.textContent = labelText;
+        placeholderSpan.style.color = '#1e293b';
+    }
+
+    if (hiddenInput) {
+        hiddenInput.value = radioInput.value;
+    }
+
+    parentContainer.classList.remove('open');
+}
+
+// Множественный выбор (Multi-select с checkbox)
 function toggleDropdown() {
+    // Закрываем все открытые single-select перед открытием мультиселекта
+    document.querySelectorAll('.custom-select.open').forEach(el => el.classList.remove('open'));
+
     const dropdown = document.getElementById('dropdown-options');
     if (dropdown) {
         dropdown.classList.toggle('show');
     }
 }
 
-// Закрытие списка при клике в любую другую область экрана
-document.addEventListener('click', function(event) {
-    const select = document.querySelector('.custom-multiselect');
-    if (select && !select.contains(event.target)) {
-        const dropdown = document.getElementById('dropdown-options');
-        if (dropdown) dropdown.classList.remove('show');
-    }
-});
-
-// Обновление текста и запись значений в hidden input
 function updateSelection() {
     const checkboxes = document.querySelectorAll('#dropdown-options input[type="checkbox"]:checked');
     const selectedValues = Array.from(checkboxes).map(cb => cb.value);
@@ -83,11 +113,25 @@ function updateSelection() {
         }
     }
 
-    // Сохраняем значения в скрытом поле для отправки формы
     if (hiddenInput) {
         hiddenInput.value = selectedValues.join(', ');
     }
 }
+
+// Закрытие ВСЕХ списков при клике вне их области
+document.addEventListener('click', function(event) {
+    // Закрываем single-select
+    if (!event.target.closest('.custom-select')) {
+        document.querySelectorAll('.custom-select.open').forEach(el => el.classList.remove('open'));
+    }
+
+    // Закрываем multi-select
+    const multiselect = event.target.closest('.custom-multiselect');
+    if (!multiselect) {
+        const dropdown = document.getElementById('dropdown-options');
+        if (dropdown) dropdown.classList.remove('show');
+    }
+});
 
 // 3. Симуляция генерации 3 университетов после заполнения анкеты
 function generateRecommendations() {

@@ -153,7 +153,6 @@ input:focus, select:focus, textarea:focus, button:focus-visible, a:focus-visible
 .section-title p { color: var(--ink-45); }
 
 /* ---------- forms (assessment) ---------- */
-
 .grid-form {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -169,9 +168,15 @@ input:focus, select:focus, textarea:focus, button:focus-visible, a:focus-visible
     margin-bottom: 1.2rem;
     color: var(--cobalt);
 }
-.form-step h4 i { color: var(--violet); }
 
-.form-group { margin-bottom: 1.1rem; }
+.form-step h4 i {
+    color: var(--violet);
+}
+
+.form-group {
+    margin-bottom: 1.1rem;
+}
+
 .form-group label {
     display: block;
     font-size: 0.85rem;
@@ -185,8 +190,69 @@ input:focus, select:focus, textarea:focus, button:focus-visible, a:focus-visible
     margin-top: 0.5rem;
 }
 
-#form-status, #form-year, #form-scholarship, #form-major {
+/* ---------- Оформление select и input ---------- */
+
+.form-group select,
+.form-group input[type="number"],
+.form-group input[type="text"] {
+    width: 100%;
+    padding: 12px 16px;
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 14px;
+    color: #334155;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    font-family: inherit;
+    box-sizing: border-box;
+}
+
+/* Кастомная стрелка для select */
+.form-group select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
     cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+    padding-right: 40px;
+}
+
+/* Наведение и фокус */
+.form-group select:hover,
+.form-group input:hover {
+    border-color: #cbd5e1;
+}
+
+.form-group select:focus,
+.form-group input:focus {
+    border-color: #4f46e5;
+    background-color: #ffffff;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+.form-group select option {
+    background-color: #ffffff;
+    color: #1e293b;
+    padding: 10px;
+    font-size: 14px;
+}
+
+/* ---------- Адаптивность ---------- */
+
+@media (max-width: 992px) {
+    .grid-form {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    .grid-form {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
 }
 
 .chip-group { display: flex; flex-wrap: wrap; gap: 0.55rem; }

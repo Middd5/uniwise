@@ -47,6 +47,7 @@
 
 /* ---------- form ------------ */
 
+.custom-select,
 .custom-multiselect {
     position: relative;
     width: 100%;
@@ -64,6 +65,12 @@
     font-size: 14px;
     color: #334155;
     user-select: none;
+    transition: border-color 0.2s;
+    box-sizing: border-box;
+}
+
+.select-box:hover {
+    border-color: #cbd5e1;
 }
 
 .select-box .arrow {
@@ -72,6 +79,13 @@
     transition: transform 0.2s;
 }
 
+/* Поворот стрелочки при открытии */
+.custom-select.open .arrow,
+.custom-multiselect.open .arrow {
+    transform: rotate(180deg);
+}
+
+/* Выпадающий список с опциями */
 .dropdown-options {
     display: none;
     position: absolute;
@@ -86,12 +100,16 @@
     overflow-y: auto;
     z-index: 100;
     padding: 6px;
+    box-sizing: border-box;
 }
 
+/* Отображение списка при добавлении класса open или show */
+.custom-select.open .dropdown-options,
 .dropdown-options.show {
     display: block;
 }
 
+/* Элементы списка (label) */
 .dropdown-options label {
     display: flex;
     align-items: center;
@@ -108,11 +126,17 @@
     background-color: #f1f5f9;
 }
 
-.dropdown-options input[type="checkbox"] {
+/* Чекбоксы и Радиокнопки внутри списка */
+.dropdown-options input[type="checkbox"],
+.dropdown-options input[type="radio"] {
     width: 16px;
     height: 16px;
     accent-color: #4f46e5;
     cursor: pointer;
+}
+
+.dropdown-options input[type="radio"] {
+    display: none;
 }
 
 
