@@ -11,7 +11,7 @@ const PORT = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET || 'super_secret_key_uniwise';
 
 // ---------- CORS ----------
-const allowedOrigins = (process.env.CORS_ORIGINS || 'http://localhost:5500,http://127.0.0.1:5500,http://localhost:3000,http://localhost:63342,https://uniwise-d94v.onrender.com')
+const allowedOrigins = (process.env.CORS_ORIGINS || 'http://localhost:5500,http://127.0.0.1:5500,http://localhost:3000,http://localhost:63342,https://uniwise-d94v.onrender.com,https://middd5.github.io/uniwise')
     .split(',')
     .map(o => o.trim().replace(/\/$/, ''));
 
