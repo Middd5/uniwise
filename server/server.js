@@ -58,13 +58,69 @@ async function initDatabase() {
                 password_hash VARCHAR(255) NOT NULL,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
+
+            CREATE TABLE IF NOT EXISTS user_assessments (
+                id SERIAL PRIMARY KEY,
+                user_id INT REFERENCES users(id) ON DELETE CASCADE,
+                gpa VARCHAR(50),
+                ielts VARCHAR(50),
+                budget VARCHAR(100),
+                interests TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
         `);
-        console.log('✅ База данных подключена, таблица users готова.');
+        console.log('✅ Таблицы users и user_assessments готовы.');
     } catch (err) {
         console.error('❌ Ошибка инициализации PostgreSQL:', err);
     }
 }
 initDatabase();
+
+// Сохранение анкеты текущего пользователя
+app.post('/api/assessment', async (req, res) => {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+    if (!token) return res.status(401).json({ error: 'Необходима авторизация' });
+
+    try {
+        const decoded = jwt.verify(token, JWT_SECRET);
+        const { gpa, ielts, budget, interests } = req.body;
+
+        const query = `
+            INSERT INTO user_assessments (user_id, gpa, ielts, budget, interests)
+            VALUES ($1, $2, $3, $4, $5)
+            RETURNING *;
+        `;
+        const result = await pool.query(query, [decoded.userId, gpa, ielts, budget, interests]);
+        res.json({ success: true, data: result.rows[0] });
+    } catch (err) {
+        console.error('Ошибка сохранения анкеты:', err);
+        res.status(403).json({ error: 'Невалидный токен или ошибка БД' });
+    }
+});
+
+// Получение последней анкеты пользователя
+app.get('/api/assessment', async (req, res) => {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+    if (!token) return res.status(401).json({ error: 'Необходима авторизация' });
+
+    try {
+        const decoded = jwt.verify(token, JWT_SECRET);
+        const result = await pool.query(
+            'SELECT * FROM user_assessments WHERE user_id = $1 ORDER BY created_at DESC LIMIT 1',
+            [decoded.userId]
+        );
+
+        if (result.rows.length === 0) {
+            return res.json({ hasAssessment: false });
+        }
+
+        res.json({ hasAssessment: true, assessment: result.rows[0] });
+    } catch (err) {
+        res.status(403).json({ error: 'Невалидный токен' });
+    }
+});
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 const chatModel = genAI.getGenerativeModel({ model: 'gemini-3.5-flash-lite' });

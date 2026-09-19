@@ -304,3 +304,65 @@ window.generateRecommendations = function() {
         recSection.scrollIntoView({ behavior: 'smooth' });
     }
 };
+
+async function saveAssessment() {
+    const token = localStorage.getItem('uniwise_token');
+    if (!token) return; // Если пользователь не вошел, сохраняем локально
+
+    const formData = {
+        gpa: document.getElementById('calc-gpa')?.value || '',
+        ielts: document.getElementById('calc-ielts')?.value || '',
+        budget: document.getElementById('form-budget')?.value || '',
+        interests: document.getElementById('form-activities')?.value || ''
+    };
+
+    try {
+        await fetch('https://uniwise-d94v.onrender.com/api/assessment', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(formData)
+        });
+    } catch (err) {
+        console.error('Ошибка сохранения анкеты:', err);
+    }
+}
+
+document.addEventListener('click', function(e) {
+    const submitBtn = e.target.closest('.form-submit-btn');
+    if (!submitBtn) return;
+
+    const form = submitBtn.closest('form');
+    if (form) e.preventDefault();
+
+    generateRecommendations();
+    saveAssessment(); // <--- Добавляем сохранение на сервер
+
+    localStorage.setItem('uniwise_form_data', 'true');
+});
+
+async function loadUserAssessment() {
+    const token = localStorage.getItem('uniwise_token');
+    if (!token) return;
+
+    try {
+        const response = await fetch('https://uniwise-d94v.onrender.com/api/assessment', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await response.json();
+
+        if (data.hasAssessment) {
+            localStorage.setItem('uniwise_form_data', 'true');
+            if (typeof generateRecommendations === 'function') {
+                generateRecommendations();
+            }
+        }
+    } catch (err) {
+        console.error('Ошибка загрузки анкеты:', err);
+    }
+}
+
+// Запускаем проверку при загрузке страницы
+document.addEventListener('DOMContentLoaded', loadUserAssessment);
