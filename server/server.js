@@ -15,17 +15,18 @@ const allowedOrigins = (process.env.CORS_ORIGINS || 'http://localhost:5500,http:
     .split(',')
     .map(o => o.trim().replace(/\/$/, ''));
 
-app.use(cors({
-    origin: function (origin, callback) {
-        if (!origin) return callback(null, true);
-        const cleanOrigin = origin.replace(/\/$/, '');
-        if (allowedOrigins.includes(cleanOrigin) || process.env.NODE_ENV !== 'production') {
-            callback(null, true);
-        } else {
-            callback(new Error('Not allowed by CORS'));
-        }
-    }
-}));
+app.use(cors());
+// app.use(cors({
+//     origin: function (origin, callback) {
+//         if (!origin) return callback(null, true);
+//         const cleanOrigin = origin.replace(/\/$/, '');
+//         if (allowedOrigins.includes(cleanOrigin) || process.env.NODE_ENV !== 'production') {
+//             callback(null, true);
+//         } else {
+//             callback(new Error('Not allowed by CORS'));
+//         }
+//     }
+// }));
 
 app.use(express.json());
 
