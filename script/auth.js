@@ -1,6 +1,10 @@
 let isRegisterMode = true;
 
-// 1. Открытие / Закрытие модалки
+const API_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+    ? 'http://localhost:3000'
+    : 'https://uniwise-d94v.onrender.com';
+
+// Открытие / Закрытие модалки
 window.openAuth = function() {
     const modal = document.getElementById('auth-modal');
     if (modal) {
@@ -17,7 +21,7 @@ window.closeAuth = function() {
     }
 };
 
-// 2. Выпадающее меню пользователя
+// Выпадающее меню пользователя
 window.toggleUserDropdown = function(event) {
     if (event) event.stopPropagation();
     const dropdown = document.getElementById('user-dropdown');
@@ -28,7 +32,7 @@ window.toggleUserDropdown = function(event) {
     }
 };
 
-// 3. Выход из аккаунта
+// Выход из аккаунта
 window.logout = function() {
     const isConfirmed = confirm('Вы точно хотите выйти с аккаунта?');
     if (!isConfirmed) return;
@@ -52,9 +56,14 @@ window.logout = function() {
         dropdown.style.display = 'none';
         dropdown.classList.add('hidden');
     }
+
+    // Обновляем состояние дашборда (скрываем трекер дедлайнов и профиль)
+    if (typeof updateDashboardState === 'function') {
+        updateDashboardState(false, false);
+    }
 };
 
-// 4. Переключение режимов Регистрация <-> Вход
+// Переключение режимов Регистрация <-> Вход
 window.toggleAuthMode = function(event) {
     if (event) event.preventDefault();
     isRegisterMode = !isRegisterMode;
@@ -80,7 +89,7 @@ window.toggleAuthMode = function(event) {
     }
 };
 
-// 5. Отправка формы на бэкенд Node.js
+// Отправка формы на бэкенд Node.js
 window.handleAuthSubmit = async function(event) {
     event.preventDefault();
 
@@ -104,7 +113,7 @@ window.handleAuthSubmit = async function(event) {
     const endpoint = isRegisterMode ? '/api/register' : '/api/login';
 
     try {
-        const response = await fetch(`http://localhost:3000${endpoint}`, {
+        const response = await fetch(`${API_URL}${endpoint}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(bodyData)
@@ -124,11 +133,11 @@ window.handleAuthSubmit = async function(event) {
         }
     } catch (err) {
         console.error('Ошибка сети:', err);
-        alert('Сервер недоступен. Проверь, запущен ли node server.js');
+        alert('Сервер недоступен. Проверь соединение.');
     }
 };
 
-// 6. Обновление UI
+// Обновление UI
 function updateUIForAuth(user) {
     const userChip = document.getElementById('user-chip');
     const authBtn = document.getElementById('auth-btn');
@@ -140,20 +149,31 @@ function updateUIForAuth(user) {
         authBtn.classList.add('hidden');
         authBtn.style.display = 'none';
     }
+
+    // Проверяем заполненность анкеты и обновляем дашборд
+    const hasFormFilled = !!localStorage.getItem('uniwise_form_data');
+    if (typeof updateDashboardState === 'function') {
+        updateDashboardState(true, hasFormFilled);
+    }
 }
 
-// 7. Инициализация и слушатели кликов
+// Инициализация и слушатели кликов
 document.addEventListener('DOMContentLoaded', () => {
     const savedUser = localStorage.getItem('uniwise_user');
+    const hasFormFilled = !!localStorage.getItem('uniwise_form_data');
+
     if (savedUser) {
         try {
             updateUIForAuth(JSON.parse(savedUser));
         } catch (e) {
             console.error('Ошибка сессии', e);
         }
+    } else {
+        if (typeof updateDashboardState === 'function') {
+            updateDashboardState(false, false);
+        }
     }
 
-    // Закрытие выпадающего меню и модалки при клике мимо
     document.addEventListener('click', (e) => {
         const modal = document.getElementById('auth-modal');
         const dropdown = document.getElementById('user-dropdown');

@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="style/style.css">
     <link rel="stylesheet" href="style/header.css">
+    <link rel="stylesheet" href="style/burger-menu.css">
     <link rel="stylesheet" href="style/home.css">
     <link rel="stylesheet" href="style/footer.css">
     <link rel="stylesheet" href="style/auth.css">
@@ -43,6 +44,13 @@
                 </svg>
             <a href="./">UniWise</a>
         </div>
+
+        <button class="burger-btn" id="burger-btn" onclick="toggleMobileMenu()" aria-label="Открыть/закрыть меню" aria-expanded="false">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+
         <nav class="nav-links">
             <a href="./">Главная</a>
             <a href="#assessment">Анкета</a>
@@ -83,7 +91,7 @@
         </div>
     </section>
 
-    <!-- 3. Анкета-диагностика -->
+    <!-- Анкета-диагностика -->
     <section id="assessment" class="section">
         <div class="section-title">
             <h2>Расскажи о себе — остальное сделаем мы</h2>
@@ -212,7 +220,7 @@
         </div>
     </section>
 
-    <!-- 4. Слайдер подобранных вузов -->
+    <!-- Слайдер подобранных вузов -->
     <section id="recommendations" class="section hidden">
         <div class="section-title">
             <h2><i class="fa-solid fa-sliders"></i> Твой персональный подбор</h2>
@@ -731,6 +739,7 @@
     </div>
 
     <script src="script/script.js"></script>
+    <script src="script/burger-menu.js"></script>
     <script src="script/auth.js"></script>
     <script src="script/chat.js"></script>
     <script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v31edd6df95cf4e85bb4c19e7a9bdbcba1788362987495" integrity="sha512-iIg7k2xntmwu6/uSb5tpc/hySgZc4eoL31yB29W6tJFo2akwjPWcEqnCEdJvGexCL0KEQwVYv5BlowfhVz26hg==" data-cf-beacon='{"version":"2024.11.0","token":"5a11dbdd0c3241f1ad5020fdefbeae31","spa":2}' crossorigin="anonymous"></script>

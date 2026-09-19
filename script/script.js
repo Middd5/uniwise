@@ -170,3 +170,137 @@ function toggleFaq(button) {
         button.setAttribute('aria-expanded', 'true');
     }
 }
+
+// 6. Обработка отправки анкеты
+document.addEventListener('DOMContentLoaded', () => {
+    // Находим форму, в которой находится сама кнопка
+    const submitBtn = document.querySelector('.form-submit-btn');
+    const assessmentForm = submitBtn ? submitBtn.closest('form') : null;
+
+    if (assessmentForm) {
+        assessmentForm.addEventListener('submit', function(e) {
+            e.preventDefault(); // Жестко блокируем перезагрузку страницы
+
+            // Показываем слайдер с рекомендациями
+            generateRecommendations();
+
+            // Сохраняем прогресс анкеты
+            localStorage.setItem('uniwise_form_data', 'true');
+
+            // Обновляем дашборд, если логика профиля подключена
+            const savedUser = localStorage.getItem('uniwise_user');
+            if (savedUser && typeof updateDashboardState === 'function') {
+                updateDashboardState(true, true);
+            }
+        });
+    }
+});
+
+let currentSlide = 0;
+let autoSlideInterval = null;
+
+function getSlideCount() {
+    const track = document.getElementById('slider-track');
+    return track ? track.children.length : 0;
+}
+
+function updateSlider() {
+    const track = document.getElementById('slider-track');
+    const counter = document.getElementById('slider-counter');
+    const totalSlides = getSlideCount();
+
+    if (!track || totalSlides === 0) return;
+
+    // Сдвигаем трек на нужный слайд
+    track.style.transform = `translateX(-${currentSlide * 100}%)`;
+
+    // Обновляем счетчик (например, "1 / 5")
+    if (counter) {
+        counter.textContent = `${currentSlide + 1} / ${totalSlides}`;
+    }
+
+    // Обновляем состояние точек-индикаторов
+    const dots = document.querySelectorAll('.slider-dot');
+    dots.forEach((dot, index) => {
+        dot.classList.toggle('active', index === currentSlide);
+    });
+}
+
+function nextSlide() {
+    const totalSlides = getSlideCount();
+    if (totalSlides === 0) return;
+    currentSlide = (currentSlide + 1) % totalSlides;
+    updateSlider();
+    resetAutoSlide();
+}
+
+function prevSlide() {
+    const totalSlides = getSlideCount();
+    if (totalSlides === 0) return;
+    currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+    updateSlider();
+    resetAutoSlide();
+}
+
+function goToSlide(index) {
+    currentSlide = index;
+    updateSlider();
+    resetAutoSlide();
+}
+
+// Генерация точек-индикаторов под слайдером
+function initSliderDots() {
+    const dotsContainer = document.getElementById('slider-dots');
+    const totalSlides = getSlideCount();
+
+    if (!dotsContainer || totalSlides === 0) return;
+
+    dotsContainer.innerHTML = '';
+    for (let i = 0; i < totalSlides; i++) {
+        const dot = document.createElement('button');
+        dot.className = `slider-dot ${i === 0 ? 'active' : ''}`;
+        dot.setAttribute('aria-label', `Перейти к слайду ${i + 1}`);
+        dot.onclick = () => goToSlide(i);
+        dotsContainer.appendChild(dot);
+    }
+}
+
+// Автоматическое перелистывание каждые 10 секунд
+function startAutoSlide() {
+    stopAutoSlide();
+    autoSlideInterval = setInterval(() => {
+        const totalSlides = getSlideCount();
+        if (totalSlides > 0) {
+            currentSlide = (currentSlide + 1) % totalSlides;
+            updateSlider();
+        }
+    }, 10000);
+}
+
+function stopAutoSlide() {
+    if (autoSlideInterval) {
+        clearInterval(autoSlideInterval);
+    }
+}
+
+function resetAutoSlide() {
+    stopAutoSlide();
+    startAutoSlide();
+}
+
+// Модифицируем generateRecommendations для инициализации слайдера при показе
+const originalGenerateRecommendations = window.generateRecommendations;
+window.generateRecommendations = function() {
+    const recSection = document.getElementById('recommendations');
+    if (recSection) {
+        recSection.classList.remove('hidden');
+
+        // Инициализируем слайдер
+        currentSlide = 0;
+        initSliderDots();
+        updateSlider();
+        startAutoSlide();
+
+        recSection.scrollIntoView({ behavior: 'smooth' });
+    }
+};

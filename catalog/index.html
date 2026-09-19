@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="../style/style.css">
     <link rel="stylesheet" href="../style/header.css">
+    <link rel="stylesheet" href="../style/burger-menu.css">
     <link rel="stylesheet" href="../style/catalog.css">
     <link rel="stylesheet" href="../style/footer.css">
     <link rel="stylesheet" href="../style/auth.css">
@@ -43,6 +44,13 @@
             </svg>
             <a href="../">UniWise</a>
         </div>
+
+        <button class="burger-btn" id="burger-btn" onclick="toggleMobileMenu()" aria-label="Открыть/закрыть меню" aria-expanded="false">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+
         <nav class="nav-links">
             <a href="../">Главная</a>
             <a href="../#assessment">Анкета</a>
@@ -152,6 +160,7 @@
     </div>
 
     <script src="../script/script.js"></script>
+    <script src="../script/burger-menu.js"></script>
     <script src="../script/catalog.js"></script>
     <script src="../script/auth.js"></script>
     <script src="../script/chat.js"></script>

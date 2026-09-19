@@ -9,15 +9,12 @@ require('dotenv').config();
 const app = express();
 
 // ---------- CORS ----------
-// В деве можно оставить open cors(), но для продакшена лучше явно
-// перечислить адреса фронтенда, которые могут стучаться к API.
-const allowedOrigins = (process.env.CORS_ORIGINS || 'http://localhost:5500,http://127.0.0.1:5500,http://localhost:3000,http://localhost:63342')
+const allowedOrigins = (process.env.CORS_ORIGINS || 'http://localhost:5500,http://127.0.0.1:5500,http://localhost:3000,http://localhost:63342,https://uniwise-d94v.onrender.com/')
     .split(',')
     .map(o => o.trim());
 
 app.use(cors({
     origin: function (origin, callback) {
-        // разрешаем запросы без Origin (например, curl/Postman) и из списка
         if (!origin || allowedOrigins.includes(origin)) {
             callback(null, true);
         } else {
@@ -36,8 +33,6 @@ const pool = new Pool({
     port: process.env.DB_PORT,
 });
 
-// ---------- Gemini ----------
-// КЛЮЧ ЖИВЁТ ТОЛЬКО ЗДЕСЬ, В .env НА СЕРВЕРЕ. Никогда не передавай его во фронтенд.
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const chatModel = genAI.getGenerativeModel({ model: 'gemini-3.5-flash-lite' });
 
@@ -101,12 +96,10 @@ app.post('/api/chat', async (req, res) => {
     }
 
     try {
-        // Системный промпт: задаём роль ассистента по поступлению
         const systemInstruction = `Ты — ИИ-ассистент UniWise, помогаешь абитуриентам с поступлением в
 университеты Канады: шансы на поступление, стипендии, визовые вопросы, эссе.
 Отвечай кратко, по делу, на русском языке.`;
 
-        // Переводим историю в формат Gemini (role: 'user' | 'model')
         const formattedHistory = Array.isArray(history)
             ? history.map(h => ({
                 role: h.role === 'model' ? 'model' : 'user',

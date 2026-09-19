@@ -1,10 +1,8 @@
 // ===== UniWise AI Chat =====
-const API_BASE = 'http://localhost:3000';
+const API_BASE = 'https://uniwise-d94v.onrender.com';
 
-// Храним историю переписки для контекста Gemini
 let chatHistory = [];
 
-// 1. Парсер Markdown в HTML (убирает артефакты *, ** и верстает списки)
 function parseMarkdown(text) {
     return text
         .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
@@ -14,7 +12,7 @@ function parseMarkdown(text) {
         .replace(/\n/g, '<br>');
 }
 
-// 2. Открытие / закрытие окна чата
+// Открытие / закрытие окна чата
 function toggleAiChat(event) {
     if (event) event.stopPropagation();
     const windowEl = document.getElementById('ai-window');
@@ -28,7 +26,6 @@ function toggleAiChat(event) {
     }
 }
 
-// 3. Добавление сообщения в чат с поддержкой Markdown для бота
 function appendMessage(text, sender) {
     const messagesContainer = document.getElementById('ai-messages');
     if (!messagesContainer) return null;
@@ -47,7 +44,7 @@ function appendMessage(text, sender) {
     return msgDiv;
 }
 
-// 4. Добавление индикатора "печатает..."
+// Добавление индикатора "печатает..."
 function appendLoadingMessage() {
     const messagesContainer = document.getElementById('ai-messages');
     if (!messagesContainer) return null;
@@ -66,7 +63,7 @@ function appendLoadingMessage() {
     return msgDiv;
 }
 
-// 5. Переключение состояния блокировки формы
+// Переключение состояния блокировки формы
 function setChatLoading(isLoading) {
     const input = document.getElementById('ai-input');
     const form = document.querySelector('.ai-window-form');
@@ -76,7 +73,7 @@ function setChatLoading(isLoading) {
     if (submitBtn) submitBtn.disabled = isLoading;
 }
 
-// 6. Отправка сообщения пользователем
+// Отправка сообщения пользователем
 async function sendAiMessage(event) {
     if (event) event.preventDefault();
 
@@ -86,11 +83,9 @@ async function sendAiMessage(event) {
     const userText = input.value.trim();
     if (!userText) return;
 
-    // 1. Отображаем сообщение юзера
     appendMessage(userText, 'user');
     input.value = '';
 
-    // 2. Блокируем форму и показываем индикатор загрузки
     setChatLoading(true);
     const loadingEl = appendLoadingMessage();
 
@@ -145,7 +140,7 @@ async function sendAiMessage(event) {
     }
 }
 
-// 7. Кнопки-подсказки (быстрые вопросы)
+// Кнопки-подсказки (быстрые вопросы)
 function askAi(questionText) {
     const input = document.getElementById('ai-input');
     if (!input) return;
@@ -157,7 +152,7 @@ function askAi(questionText) {
     }
 }
 
-// 8. Инициализация глобальных функций и событий DOM
+// Инициализация глобальных функций и событий DOM
 window.toggleAiChat = toggleAiChat;
 window.sendAiMessage = sendAiMessage;
 window.askAi = askAi;
