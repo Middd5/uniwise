@@ -3,19 +3,23 @@ const { Pool } = require('pg');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { GoogleGenerativeAI } = require('@google/generative-ai'); // npm i @google/generative-ai
+const { GoogleGenerativeAI } = require('@google/generative-ai');
 require('dotenv').config();
 
 const app = express();
+const PORT = process.env.PORT || 3000;
+const JWT_SECRET = process.env.JWT_SECRET || 'super_secret_key_uniwise';
 
 // ---------- CORS ----------
-const allowedOrigins = (process.env.CORS_ORIGINS || 'http://localhost:5500,http://127.0.0.1:5500,http://localhost:3000,http://localhost:63342,https://uniwise-d94v.onrender.com/')
+const allowedOrigins = (process.env.CORS_ORIGINS || 'http://localhost:5500,http://127.0.0.1:5500,http://localhost:3000,http://localhost:63342,https://uniwise-d94v.onrender.com')
     .split(',')
-    .map(o => o.trim());
+    .map(o => o.trim().replace(/\/$/, ''));
 
 app.use(cors({
     origin: function (origin, callback) {
-        if (!origin || allowedOrigins.includes(origin)) {
+        if (!origin) return callback(null, true);
+        const cleanOrigin = origin.replace(/\/$/, '');
+        if (allowedOrigins.includes(cleanOrigin) || process.env.NODE_ENV !== 'production') {
             callback(null, true);
         } else {
             callback(new Error('Not allowed by CORS'));
@@ -25,16 +29,46 @@ app.use(cors({
 
 app.use(express.json());
 
-const pool = new Pool({
-    user: process.env.DB_USER,
-    host: process.env.DB_HOST,
-    database: process.env.DB_NAME,
-    password: process.env.DB_PASSWORD,
-    port: process.env.DB_PORT,
-});
+// ---------- Подключение к PostgreSQL ----------
+// Поддержка подключения как по переменным DB_*, так и через DATABASE_URL от Render
+const poolConfig = process.env.DATABASE_URL
+    ? {
+        connectionString: process.env.DATABASE_URL,
+        ssl: { rejectUnauthorized: false } // Обязательно для подключения к базы данных на Render
+    }
+    : {
+        user: process.env.DB_USER || 'postgres',
+        host: process.env.DB_HOST || 'localhost',
+        database: process.env.DB_NAME || 'uniwise_db',
+        password: process.env.DB_PASSWORD || 'postgres',
+        port: process.env.DB_PORT || 5432,
+    };
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const pool = new Pool(poolConfig);
+
+// ---------- Автоматическое создание таблиц ----------
+async function initDatabase() {
+    try {
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS users (
+                id SERIAL PRIMARY KEY,
+                name VARCHAR(100),
+                email VARCHAR(255) UNIQUE NOT NULL,
+                password_hash VARCHAR(255) NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+        `);
+        console.log('✅ База данных подключена, таблица users готова.');
+    } catch (err) {
+        console.error('❌ Ошибка инициализации PostgreSQL:', err);
+    }
+}
+initDatabase();
+
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 const chatModel = genAI.getGenerativeModel({ model: 'gemini-3.5-flash-lite' });
+
+// ---------- Авторизация & Регистрация ----------
 
 // Регистрация
 app.post('/api/register', async (req, res) => {
@@ -46,10 +80,11 @@ app.post('/api/register', async (req, res) => {
         const query = 'INSERT INTO users (name, email, password_hash) VALUES ($1, $2, $3) RETURNING id, name, email;';
         const result = await pool.query(query, [name, email, passwordHash]);
 
-        const token = jwt.sign({ userId: result.rows[0].id }, process.env.JWT_SECRET, { expiresIn: '7d' });
+        const token = jwt.sign({ userId: result.rows[0].id }, JWT_SECRET, { expiresIn: '7d' });
         res.json({ success: true, user: result.rows[0], token });
     } catch (err) {
         if (err.code === '23505') return res.status(400).json({ error: 'Email уже зарегистрирован' });
+        console.error('Ошибка регистрации:', err);
         res.status(500).json({ error: 'Ошибка сервера' });
     }
 });
@@ -65,9 +100,10 @@ app.post('/api/login', async (req, res) => {
         const isMatch = await bcrypt.compare(password, user.password_hash);
         if (!isMatch) return res.status(400).json({ error: 'Неверный email или пароль' });
 
-        const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '7d' });
+        const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '7d' });
         res.json({ success: true, user: { id: user.id, name: user.name, email: user.email }, token });
     } catch (err) {
+        console.error('Ошибка авторизации:', err);
         res.status(500).json({ error: 'Ошибка сервера' });
     }
 });
@@ -79,8 +115,9 @@ app.get('/api/me', async (req, res) => {
     if (!token) return res.status(401).json({ error: 'Нет доступа' });
 
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const decoded = jwt.verify(token, JWT_SECRET);
         const result = await pool.query('SELECT id, name, email FROM users WHERE id = $1', [decoded.userId]);
+        if (result.rows.length === 0) return res.status(404).json({ error: 'Пользователь не найден' });
         res.json(result.rows[0]);
     } catch {
         res.status(403).json({ error: 'Невалидный токен' });
@@ -96,9 +133,7 @@ app.post('/api/chat', async (req, res) => {
     }
 
     try {
-        const systemInstruction = `Ты — ИИ-ассистент UniWise, помогаешь абитуриентам с поступлением в
-университеты Канады: шансы на поступление, стипендии, визовые вопросы, эссе.
-Отвечай кратко, по делу, на русском языке.`;
+        const systemInstruction = `Ты — ИИ-ассистент UniWise, помогаешь абитуриентам с поступлением в университеты Канады: шансы на поступление, стипендии, визовые вопросы, эссе. Отвечай кратко, по делу, на русском языке.`;
 
         const formattedHistory = Array.isArray(history)
             ? history.map(h => ({
@@ -138,7 +173,7 @@ app.post('/api/university-card', async (req, res) => {
   "rank": "Краткий рейтинг, например '#1 в Канаде'",
   "image": "URL картинки (можно с unsplash.com)",
   "desc": "Описание в 1-2 предложения",
-  "majors": ["cs" | "biz" | "eng"],
+  "majors": ["cs", "biz", "eng"],
   "stats": { "ielts": "6.5+", "gpa": "3.5 / 4.0", "tuition": "$30k - $45k" },
   "details": { "docs": "какие документы нужны", "activities": "какие активности ценятся" },
   "deadline": "дата дедлайна",
@@ -148,7 +183,7 @@ app.post('/api/university-card', async (req, res) => {
         const result = await chatModel.generateContent(prompt);
         let rawText = result.response.text().trim();
 
-        // На случай если модель всё же обернёт ответ в ```json ... ```
+        // Очищаем результат от markdown блоков ```json ... ```
         rawText = rawText.replace(/^```json\s*|```$/g, '').trim();
 
         let uniData;
@@ -166,4 +201,10 @@ app.post('/api/university-card', async (req, res) => {
     }
 });
 
-app.listen(process.env.PORT, () => console.log(`Server running on port ${process.env.PORT}`));
+// Корневой эндпоинт для проверки статуса
+app.get('/', (req, res) => {
+    res.send('UniWise Backend Service is running');
+});
+
+// Запуск сервера
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
